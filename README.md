@@ -22,6 +22,4 @@ This web component assumes you will be marking up your checkbox group in a `fiel
 
 ## Demo
 
-[Live Demo](./demo.html)
-
-<iframe src="./demo.html"></iframe>
+[Live Demo](https://aarongustafson.github.io/form-required-checkboxes/demo.html) ([Source](./demo.html))
