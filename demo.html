@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+		<meta charset="UTF-8">
+		<title>Required Checkboxes Web Component Demo</title>
+		<style>
+			body {
+				margin: 1rem;
+			}
+
+			fieldset {
+				border: 0;
+				margin: 1.5rem 0 0;
+				padding: 0;
+			}
+			legend {
+				font-weight: bold;
+			}
+			label:not(:has([type=checkbox])) {
+				font-weight: bold;
+			}
+			input:not([type=checkbox],[type=radio],[type=submit],[type=reset]) {
+				display: block;
+			}
+			fieldset ul {
+				margin-block: .5rem 0;
+			}
+			small {
+				display: block;
+				margin-block: .5rem 1rem;
+			}
+
+			fieldset ul:has([type=checkbox]) {
+				display: flex;
+				list-style: none;
+				flex-wrap: wrap;
+				gap: 1rem;
+				margin-inline: 0;
+				padding-inline: 0;
+			}
+			fieldset li:has([type=checkbox]) {
+					flex-basis: 8rem;
+			}
+		</style>
+</head>
+<body>
+	<form action="#">
+		<label>Email address
+			<input type="email" required name="email">
+		</label>
+		<form-required-checkboxes required="3" notice="Choose 3 options" error="Please be sure to pick only 3 items">
+			<fieldset>
+				<legend>Group 1 label</legend>
+				<ul>
+					<li><label><input type="checkbox" name="foo[]" value="1"> First item</label></li>
+					<li><label><input type="checkbox" name="foo[]" value="1"> Second item</label></li>
+					<li><label><input type="checkbox" name="foo[]" value="1"> Third item</label></li>
+					<li><label><input type="checkbox" name="foo[]" value="1"> Fourth item</label></li>
+					<li><label><input type="checkbox" name="foo[]" value="1"> Fifth item</label></li>
+				</ul>
+			</fieldset>
+		</form-required-checkboxes>
+
+		<form-required-checkboxes required="3-5" notice="Choose 3-5 options">
+			<fieldset>
+				<legend>Group 2 label</legend>
+				<ul>
+					<li><label><input type="checkbox" name="bar[]" value="1"> First item</label></li>
+					<li><label><input type="checkbox" name="bar[]" value="1"> Second item</label></li>
+					<li><label><input type="checkbox" name="bar[]" value="1"> Third item</label></li>
+					<li><label><input type="checkbox" name="bar[]" value="1"> Fourth item</label></li>
+					<li><label><input type="checkbox" name="bar[]" value="1"> Fifth item</label></li>
+				</ul>
+			</fieldset>
+		</form-required-checkboxes>
+
+		<form-required-checkboxes required="0-3" notice="Choose at most 3 options">
+			<fieldset>
+				<legend>Group 3 label</legend>
+				<ul>
+					<li><label><input type="checkbox" name="biz[]" value="1"> First item</label></li>
+					<li><label><input type="checkbox" name="biz[]" value="1"> Second item</label></li>
+					<li><label><input type="checkbox" name="biz[]" value="1"> Third item</label></li>
+					<li><label><input type="checkbox" name="biz[]" value="1"> Fourth item</label></li>
+					<li><label><input type="checkbox" name="biz[]" value="1"> Fifth item</label></li>
+				</ul>
+			</fieldset>
+		</form-required-checkboxes>
+
+		<button type="submit">Submit</button>
+	</form>
+
+	<script src="form-required-checkboxes.js" async></script>
+</body>

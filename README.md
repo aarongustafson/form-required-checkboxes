@@ -22,4 +22,6 @@ This web component assumes you will be marking up your checkbox group in a `fiel
 
 ## Demo
 
-https://codepen.io/aarongustafson/pen/gOJVVea
+[Live Demo](./demo.html)
+
+<iframe src="./demo.html"></iframe>
