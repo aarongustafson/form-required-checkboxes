@@ -12,7 +12,7 @@ Currently, we can only make checkboxes required or not, individually. In some ca
     <li>Max (e.g., 0-3) requires a minimum of zero and a max of the second number to be chosen.</li>
     </ul>
   </li>
-  <li><code>notice</code> (optional) - The description that explains details of the required value in plan language. If you don’t supply one, the component will create one for you. This description will be added as a `small` element within the component (as a sibling to the fieldset)</li>
+  <li><code>notice</code> (optional) - The description that explains details of the required value in plan language. If you don’t supply one, the component will create one for you. This description will be added as a <code>small</code> element within the component (as a sibling to the fieldset)</li>
   <li><code>error</code> (optional) - The validation error you’d like to show when the validation criteria is not met.</li>
 </ul>
 
