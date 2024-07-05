@@ -1,46 +1,44 @@
 <html lang="en">
 <head>
-		<meta charset="UTF-8">
-		<title>Required Checkboxes Web Component Demo</title>
-		<style>
-			body {
-				margin: 1rem;
-			}
-
-			fieldset {
-				border: 0;
-				margin: 1.5rem 0 0;
-				padding: 0;
-			}
-			legend {
-				font-weight: bold;
-			}
-			label:not(:has([type=checkbox])) {
-				font-weight: bold;
-			}
-			input:not([type=checkbox],[type=radio],[type=submit],[type=reset]) {
-				display: block;
-			}
-			fieldset ul {
-				margin-block: .5rem 0;
-			}
-			small {
-				display: block;
-				margin-block: .5rem 1rem;
-			}
-
-			fieldset ul:has([type=checkbox]) {
-				display: flex;
-				list-style: none;
-				flex-wrap: wrap;
-				gap: 1rem;
-				margin-inline: 0;
-				padding-inline: 0;
-			}
-			fieldset li:has([type=checkbox]) {
-					flex-basis: 8rem;
-			}
-		</style>
+	<meta charset="UTF-8">
+	<title>Required Checkboxes Web Component Demo</title>
+	<style>
+		body {
+			margin: 1rem;
+		}
+		fieldset {
+			border: 0;
+			margin: 1.5rem 0 0;
+			padding: 0;
+		}
+		legend {
+			font-weight: bold;
+		}
+		label:not(:has([type=checkbox])) {
+			font-weight: bold;
+		}
+		input:not([type=checkbox],[type=radio],[type=submit],[type=reset]) {
+			display: block;
+		}
+		fieldset ul {
+			margin-block: .5rem 0;
+		}
+		small {
+			display: block;
+			margin-block: .5rem 1rem;
+		}
+		fieldset ul:has([type=checkbox]) {
+			display: flex;
+			list-style: none;
+			flex-wrap: wrap;
+			gap: 1rem;
+			margin-inline: 0;
+			padding-inline: 0;
+		}
+		fieldset li:has([type=checkbox]) {
+			flex-basis: 8rem;
+		}
+	</style>
 </head>
 <body>
 	<form action="#">
