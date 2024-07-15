@@ -5,8 +5,11 @@ class FormRequiredCheckboxesElement extends HTMLElement {
 		this.field_name = this.$checkboxes[0].name;
 		this.notice = this.getAttribute("notice");
 		this.error = this.getAttribute("error");
+		this.$fieldset = this.querySelector("fieldset");
+		this.$legend = this.querySelector("fieldset");
 		this.getMinMax();
 		this.addDescription();
+		this.setupAccessibleName();
 		this.setupValidation();
 	}
 	
@@ -37,9 +40,14 @@ class FormRequiredCheckboxesElement extends HTMLElement {
 			}
 		}
 		this.$description.innerText = this.notice;
-		this.appendChild(this.$description);
-		// Ensure the description is associated with the legend
-		this.querySelector("legend").setAttribute("aria-describedby", this.$description.id);
+		(this.$fieldset ? this.$fieldset : this).appendChild(this.$description);
+	}
+
+	setupAccessibleName() {
+		if (this.$legend && !this.$legend.id) {
+			this.$legend.id = `${this.field_name.replace("[]", "")}-legend`;
+		}
+		(this.$fieldset ? this.$fieldset : this).setAttribute("aria-labelledby", `${this.$legend ? this.$legend.id : ""} ${this.$description.id}`);
 	}
 	
 	setupValidation() {
