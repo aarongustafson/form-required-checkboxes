@@ -3,6 +3,8 @@
 	"version": "1.0.0",
 	"description": "Web component that enables requirement rules for checkbox groups.",
 	"main": "form-required-checkboxes.js",
+	"module": "form-required-checkboxes.module.js",
+	"customElements": "custom-elements.json",
 	"publishConfig": {
 		"access": "public"
 	},
