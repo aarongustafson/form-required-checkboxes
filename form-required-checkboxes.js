@@ -1,75 +1,75 @@
 class FormRequiredCheckboxesElement extends HTMLElement {
 	connectedCallback() {
-		this.element_name = this.nodeName.toLowerCase();
-		this.$checkboxes = this.querySelectorAll("[type='checkbox']");
-		this.field_name = this.$checkboxes[0].name;
-		this.notice = this.getAttribute("notice");
-		this.error = this.getAttribute("error");
-		this.$fieldset = this.querySelector("fieldset");
-		this.$legend = this.querySelector("fieldset");
-		this.getMinMax();
-		this.addDescription();
-		this.setupAccessibleName();
-		this.setupValidation();
+		this.__element_name = this.nodeName.toLowerCase();
+		this.__$checkboxes = this.querySelectorAll("[type='checkbox']");
+		this.__field_name = this.__$checkboxes[0].name;
+		this.__notice = this.getAttribute("notice");
+		this.__error = this.getAttribute("error");
+		this.__$fieldset = this.querySelector("fieldset");
+		this.__$legend = this.querySelector("legend");
+		this.__getMinMax();
+		this.__addDescription();
+		this.__setupAccessibleName();
+		this.__setupValidation();
 	}
 	
-	getMinMax() {
+	__getMinMax() {
 		let required = this.getAttribute("required");
 		if ( ! required ) {
 			throw new Error("You must specify a `required` number of checkbox choices in a `checkbox-required` element");
 			return;
 		}
 		if ( required.indexOf('-') > 0 ) {
-			[this.min, this.max] = required.split("-");
+			[this.__min, this.__max] = required.split("-");
 		} else {
-			this.min = required;
-			this.max = required;
+			this.__min = required;
+			this.__max = required;
 		}
 	}
 	
-	addDescription() {
-		this.$description = document.createElement("small");
-		this.$description.id = `${this.field_name.replace("[]", "")}-description`;
-		if (! this.notice) {
-			if ( this.min == this.max ) {
-				this.notice = `Choose ${this.min} from the list`;
-			} else if ( this.min === 0 ) {
-				this.notice = `Choose up to ${this.max} from the list`;
+	__addDescription() {
+		this.__$description = document.createElement("small");
+		this.__$description.id = `${this.__field_name.replace("[]", "")}-description`;
+		if (! this.__notice) {
+			if ( this.__min == this.__max ) {
+				this.__notice = `Choose ${this.__min} from the list`;
+			} else if ( this.__min === 0 ) {
+				this.__notice = `Choose up to ${this.__max} from the list`;
 			} else {
-				this.notice = `Choose between ${this.min} and ${this.max} from the list`;
+				this.__notice = `Choose between ${this.__min} and ${this.__max} from the list`;
 			}
 		}
-		this.$description.innerText = this.notice;
-		(this.$fieldset ? this.$fieldset : this).appendChild(this.$description);
+		this.__$description.innerText = this.__notice;
+		(this.__$fieldset ? this.__$fieldset : this).appendChild(this.__$description);
 	}
 
-	setupAccessibleName() {
-		if (this.$legend && !this.$legend.id) {
-			this.$legend.id = `${this.field_name.replace("[]", "")}-legend`;
+	__setupAccessibleName() {
+		if (this.__$legend && !this.__$legend.id) {
+			this.__$legend.id = `${this.__field_name.replace("[]", "")}-legend`;
 		}
-		(this.$fieldset ? this.$fieldset : this).setAttribute("aria-labelledby", `${this.$legend ? this.$legend.id : ""} ${this.$description.id}`);
+		(this.__$fieldset ? this.__$fieldset : this).setAttribute("aria-labelledby", `${this.__$legend ? this.__$legend.id : ""} ${this.__$description.id}`);
 	}
 	
-	setupValidation() {
-		this.$form = this.closest("form");
-		this.$form.addEventListener("formdata", this.handleValidation.bind(this));
-		this.$form.addEventListener("submit", this.handleValidation.bind(this));
-		[...this.$checkboxes].map(input => input.addEventListener("change", this.resetValidity.bind(this)));
+	__setupValidation() {
+		this.__$form = this.closest("form");
+		this.__$form.addEventListener("formdata", this.__handleValidation.bind(this));
+		this.__$form.addEventListener("submit", this.__handleValidation.bind(this));
+		[...this.__$checkboxes].map(input => input.addEventListener("change", this.__resetValidity.bind(this)));
 	}
 	
-	handleValidation( e ) {
-		let total_checked = [...this.$checkboxes].filter(input => input.checked).length;
-		if ( total_checked < this.min || total_checked > this.max ) {
+	__handleValidation( e ) {
+		let total_checked = [...this.__$checkboxes].filter(input => input.checked).length;
+		if ( total_checked < this.__min || total_checked > this.__max ) {
 			e.preventDefault();
-			this.$checkboxes[0].setCustomValidity(this.error ?  this.error : this.notice);
-			if ( this.shouldShowFieldError(this.$checkboxes[0]) ) {
-				this.$checkboxes[0].reportValidity();
+			this.__$checkboxes[0].setCustomValidity(this.__error ?  this.__error : this.__notice);
+			if ( this.__shouldShowFieldError(this.__$checkboxes[0]) ) {
+				this.__$checkboxes[0].reportValidity();
 			}
 		}
 	}
 	
-	shouldShowFieldError( input ) {
-		let $all_fields = [...this.$form.elements].filter(element => element.matches("input:not([type=submit],[type=reset]),textarea,select"));
+	__shouldShowFieldError( input ) {
+		let $all_fields = [...this.__$form.elements].filter(element => element.matches("input:not([type=submit],[type=reset]),textarea,select"));
 		let i = 0;
 		let length = $all_fields.length;
 		while ( i < length ) {
@@ -86,13 +86,13 @@ class FormRequiredCheckboxesElement extends HTMLElement {
 		return true;
 	}
 	
-	resetValidity() {
-		[...this.$form.querySelectorAll(`${this.element_name} [type=checkbox]`)]
+	__resetValidity() {
+		[...this.__$form.querySelectorAll(`${this.__element_name} [type=checkbox]`)]
 			 .map(input =>  input.setCustomValidity(""));
 	}
 	
 }
 
-if("customElements" in window) {
-	window.customElements.define("form-required-checkboxes", FormRequiredCheckboxesElement);
+if( !!customElements ) {
+	customElements.define("form-required-checkboxes", FormRequiredCheckboxesElement);
 }
