@@ -15,11 +15,7 @@
 		"type": "git",
 		"url": "git+https://github.com/aarongustafson/form-required-checkboxes.git"
 	},
-	"author": {
-		"name": "Aaron Gustafson",
-		"email": "aaron@easy-designs.net",
-		"url": "https://www.aaron-gustafson.com/"
-	},
+	"author": "Aaron Gustafson <aaron@easy-designs.net> (https://www.aaron-gustafson.com/)",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/aarongustafson/form-required-checkboxes/issues"
@@ -27,5 +23,10 @@
 	"homepage": "https://github.com/aarongustafson/form-required-checkboxes#readme",
 	"devDependencies": {
 		"prettier": "^3.3.2"
-	}
+	},
+	"keywords": [
+		"html",
+		"custom element",
+		"forms"
+	]
 }
