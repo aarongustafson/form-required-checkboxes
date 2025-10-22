@@ -1,16 +1,18 @@
 export class FormRequiredCheckboxesElement extends HTMLElement {
 	connectedCallback() {
-		this.__element_name = this.nodeName.toLowerCase();
-		this.__$checkboxes = this.querySelectorAll("[type='checkbox']");
-		this.__field_name = this.__$checkboxes[0].name;
-		this.__notice = this.getAttribute("notice");
-		this.__error = this.getAttribute("error");
-		this.__$fieldset = this.querySelector("fieldset");
-		this.__$legend = this.querySelector("legend");
-		this.__getMinMax();
-		this.__addDescription();
-		this.__setupAccessibleName();
-		this.__setupValidation();
+		setTimeout(()=>{
+      this.__element_name = this.nodeName.toLowerCase();
+      this.__$checkboxes = this.querySelectorAll("[type='checkbox']");
+      this.__field_name = this.__$checkboxes[0].name;
+      this.__notice = this.getAttribute("notice");
+      this.__error = this.getAttribute("error");
+      this.__$fieldset = this.querySelector("fieldset");
+      this.__$legend = this.querySelector("legend");
+      this.__getMinMax();
+      this.__addDescription();
+      this.__setupAccessibleName();
+      this.__setupValidation();
+    });
 	}
 	
 	__getMinMax() {
