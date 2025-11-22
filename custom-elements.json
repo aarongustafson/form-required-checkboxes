@@ -34,6 +34,13 @@
 							"type": {
 								"text": "string"
 							}
+						},
+						{
+							"name": "lang",
+							"description": "Language code for localized messages (e.g., 'en', 'es', 'fr', 'de').",
+							"type": {
+								"text": "string"
+							}
 						}
 					],
 					"superclass": {
