@@ -1,4 +1,16 @@
+import defaultTranslations from './translations.json' with { type: 'json' };
+
 export class FormRequiredCheckboxesElement extends HTMLElement {
+	// Static property for custom translations
+	static customTranslations = {};
+
+	// Static method to register custom translations
+	static registerTranslations(translations) {
+		this.customTranslations = {
+			...this.customTranslations,
+			...translations,
+		};
+	}
 	connectedCallback() {
 		setTimeout(() => {
 			this.__element_name = this.nodeName.toLowerCase();
@@ -8,11 +20,35 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 			this.__error = this.getAttribute('error');
 			this.__$fieldset = this.querySelector('fieldset');
 			this.__$legend = this.querySelector('legend');
+			this.__lang =
+				this.getAttribute('lang') ||
+				this.closest('[lang]')?.getAttribute('lang') ||
+				document.documentElement.lang ||
+				'en';
 			this.__getMinMax();
 			this.__addDescription();
 			this.__setupAccessibleName();
 			this.__setupValidation();
 		});
+	}
+
+	__getTranslations() {
+		// Merge default and custom translations, with custom taking precedence
+		const allTranslations = {
+			...defaultTranslations,
+			...FormRequiredCheckboxesElement.customTranslations,
+		};
+
+		// Get translations for current language, fallback to English
+		const langCode = this.__lang.split('-')[0]; // e.g., 'en-US' -> 'en'
+		return allTranslations[langCode] || allTranslations.en;
+	}
+
+	static __interpolate(template, values) {
+		return template.replace(
+			/\{(\w+)\}/g,
+			(match, key) => values[key] || match,
+		);
 	}
 
 	__getMinMax() {
@@ -33,15 +69,50 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	__addDescription() {
 		this.__$description = document.createElement('small');
 		this.__$description.id = `${this.__field_name.replace('[]', '')}-description`;
+
 		if (!this.__notice) {
+			const t = this.__getTranslations();
+
 			if (this.__min == this.__max) {
-				this.__notice = `Choose ${this.__min} from the list`;
-			} else if (this.__min === 0) {
-				this.__notice = `Choose up to ${this.__max} from the list`;
+				this.__notice = FormRequiredCheckboxesElement.__interpolate(
+					t.exact,
+					{ n: this.__min },
+				);
+			} else if (this.__min == 0) {
+				this.__notice = FormRequiredCheckboxesElement.__interpolate(
+					t.max,
+					{ n: this.__max },
+				);
 			} else {
-				this.__notice = `Choose between ${this.__min} and ${this.__max} from the list`;
+				this.__notice = FormRequiredCheckboxesElement.__interpolate(
+					t.range,
+					{
+						min: this.__min,
+						max: this.__max,
+					},
+				);
 			}
 		}
+
+		if (!this.__error) {
+			const t = this.__getTranslations();
+
+			if (this.__min == this.__max) {
+				this.__error = FormRequiredCheckboxesElement.__interpolate(
+					t.error_exact,
+					{ n: this.__min },
+				);
+			} else {
+				this.__error = FormRequiredCheckboxesElement.__interpolate(
+					t.error_range,
+					{
+						min: this.__min,
+						max: this.__max,
+					},
+				);
+			}
+		}
+
 		this.__$description.innerText = this.__notice;
 		(this.__$fieldset ? this.__$fieldset : this).appendChild(
 			this.__$description,
