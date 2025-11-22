@@ -57,6 +57,8 @@ You can also use the component directly from a CDN:
 
 ## API
 
+### Attributes
+
 <ul>
   <li><code>required</code> - Represents the range of required values.
   <ul>
@@ -65,9 +67,101 @@ You can also use the component directly from a CDN:
     <li>Max (e.g., 0-3) requires a minimum of zero and a max of the second number to be chosen.</li>
     </ul>
   </li>
-  <li><code>notice</code> (optional) - The description that explains details of the required value in plain language. If you don't supply one, the component will create one for you. This description will be added as a <code>small</code> element within the component (as a sibling to the fieldset)</li>
-  <li><code>error</code> (optional) - The validation error you'd like to show when the validation criteria is not met.</li>
+  <li><code>notice</code> (optional) - The description that explains details of the required value in plain language. If you don't supply one, the component will create one for you based on the current language. This description will be added as a <code>small</code> element within the component (as a sibling to the fieldset)</li>
+  <li><code>error</code> (optional) - The validation error you'd like to show when the validation criteria is not met. If not provided, an appropriate error message will be generated based on the current language.</li>
+  <li><code>lang</code> (optional) - Language code for localized messages (e.g., "en", "es", "fr", "de"). Falls back to the nearest ancestor's <code>lang</code> attribute or the document language.</li>
 </ul>
+
+### Static Methods
+
+<ul>
+  <li><code>FormRequiredCheckboxesElement.registerTranslations(translations)</code> - Register custom translations or override existing ones. See the Localization section below for details.</li>
+</ul>
+
+## Localization
+
+The component includes built-in translations for 16 languages. Messages are automatically generated based on the `lang` attribute.
+
+**Supported languages:**
+- **en** - English
+- **zh** - Chinese (Mandarin)
+- **hi** - Hindi
+- **es** - Spanish
+- **fr** - French
+- **ar** - Arabic
+- **bn** - Bengali
+- **pt** - Portuguese
+- **ru** - Russian
+- **ja** - Japanese
+- **de** - German
+- **pa** - Punjabi
+- **jv** - Javanese
+- **ko** - Korean
+- **vi** - Vietnamese
+- **it** - Italian
+
+Regional language codes (e.g., `en-US`, `es-MX`) automatically fall back to their base language.
+
+### Using Built-in Languages
+
+```html
+<form-required-checkboxes required="3" lang="es">
+  <fieldset>
+    <legend>Opciones</legend>
+    <!-- Will display: "Elija 3 de la lista" -->
+  </fieldset>
+</form-required-checkboxes>
+```
+
+The component will automatically detect the language from:
+1. The `lang` attribute on the element itself
+2. The `lang` attribute on the nearest ancestor element
+3. The document's `lang` attribute
+4. Falls back to English if none found
+
+### Registering Custom Translations
+
+You can register custom translations or override existing ones:
+
+```javascript
+import { FormRequiredCheckboxesElement } from '@aarongustafson/form-required-checkboxes/form-required-checkboxes.js';
+
+FormRequiredCheckboxesElement.registerTranslations({
+  pt: {
+    exact: "Escolha {n} da lista",
+    max: "Escolha até {n} da lista",
+    range: "Escolha entre {min} e {max} da lista",
+    error_exact: "Você deve escolher exatamente {n} opções",
+    error_range: "Você deve escolher entre {min} e {max} opções"
+  }
+});
+```
+
+### Overriding Specific Messages
+
+You can override just specific messages for a language:
+
+```javascript
+FormRequiredCheckboxesElement.registerTranslations({
+  en: {
+    exact: "Pick exactly {n} items"
+    // Other messages will use defaults
+  }
+});
+```
+
+### Per-Instance Overrides
+
+You can still override messages on individual instances using attributes:
+
+```html
+<form-required-checkboxes 
+  required="3" 
+  notice="Select exactly 3 items please"
+  error="You must select 3 items">
+  <!-- ... -->
+</form-required-checkboxes>
+```
 
 ## Markup Assumptions
 
