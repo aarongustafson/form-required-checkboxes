@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
       id-token: write # Required for OIDC authentication
+      attestations: write # Required for provenance
 
     steps:
       - uses: actions/checkout@v4
@@ -29,4 +30,4 @@ jobs:
         run: npm run test:run
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npm publish --provenance
