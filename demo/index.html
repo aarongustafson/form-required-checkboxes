@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Required Checkboxes Web Component Demo</title>
+		<link rel="stylesheet" href="./styles.css" />
+		<style>
+			/* Demo-specific styles */
+			fieldset div:has([type='checkbox']) {
+				display: flex;
+				list-style: none;
+				flex-wrap: wrap;
+				gap: 0.1rem;
+				margin-inline: 0;
+				padding-inline: 0;
+			}
+			fieldset label:has([type='checkbox']) {
+				flex-basis: 10rem;
+				margin-block: 0;
+				font-weight: normal;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>&lt;form-required-checkboxes&gt;</h1>
+			<p>
+				A web component that enables requirement rules for checkbox
+				groups. Enforce exact numbers or ranges of required checkbox
+				selections with built-in validation and multi-language support.
+				See the
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
+					>README</a
+				>
+				for installation and API documentation.
+			</p>
+		</header>
+
+		<main>
+			<!-- Exact Number Example -->
+			<section>
+				<h2>Exact Number Required</h2>
+				<p>Require exactly N checkboxes to be selected.</p>
+
+				<div class="demo-section">
+					<h3>Require Exactly 3 Selections</h3>
+					<p>
+						This example requires exactly 3 checkboxes to be
+						selected. Try submitting with fewer or more selections
+						to see the validation in action.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-required-checkboxes required="3"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Choose your top 3 skills&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="skills[]" value="js"&gt;
+        JavaScript
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="skills[]" value="py"&gt;
+        Python
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="skills[]" value="java"&gt;
+        Java
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="skills[]" value="go"&gt;
+        Go
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="skills[]" value="rust"&gt;
+        Rust
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form-required-checkboxes&gt;</code></pre>
+						<div class="demo">
+							<form id="form1">
+								<form-required-checkboxes required="3">
+									<fieldset>
+										<legend>
+											Choose your top 3 skills
+										</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="skills[]"
+													value="js"
+												/>
+												JavaScript
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="skills[]"
+													value="py"
+												/>
+												Python
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="skills[]"
+													value="java"
+												/>
+												Java
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="skills[]"
+													value="go"
+												/>
+												Go
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="skills[]"
+													value="rust"
+												/>
+												Rust
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Submit</button>
+								<button type="reset">Reset</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Range Example -->
+			<section>
+				<h2>Range Required</h2>
+				<p>
+					Require a minimum and maximum number of checkbox selections.
+				</p>
+
+				<div class="demo-section">
+					<h3>Require 2-4 Selections</h3>
+					<p>
+						This example requires between 2 and 4 checkboxes to be
+						selected.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-required-checkboxes required="2-4"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Select 2-4 interests&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="interests[]" value="music"&gt;
+        Music
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="interests[]" value="sports"&gt;
+        Sports
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="interests[]" value="reading"&gt;
+        Reading
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="interests[]" value="gaming"&gt;
+        Gaming
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="interests[]" value="cooking"&gt;
+        Cooking
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="interests[]" value="travel"&gt;
+        Travel
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form-required-checkboxes&gt;</code></pre>
+						<div class="demo">
+							<form id="form2">
+								<form-required-checkboxes required="2-4">
+									<fieldset>
+										<legend>Select 2-4 interests</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="interests[]"
+													value="music"
+												/>
+												Music
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="interests[]"
+													value="sports"
+												/>
+												Sports
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="interests[]"
+													value="reading"
+												/>
+												Reading
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="interests[]"
+													value="gaming"
+												/>
+												Gaming
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="interests[]"
+													value="cooking"
+												/>
+												Cooking
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="interests[]"
+													value="travel"
+												/>
+												Travel
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Submit</button>
+								<button type="reset">Reset</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Maximum Only Example -->
+			<section>
+				<h2>Maximum Only (Optional)</h2>
+				<p>
+					Set a maximum number of selections with no minimum
+					requirement (0-N).
+				</p>
+
+				<div class="demo-section">
+					<h3>Up to 3 Selections (Optional)</h3>
+					<p>
+						This example allows up to 3 selections but doesn't
+						require any. The form will fail validation if more than
+						3 are selected.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-required-checkboxes required="0-3"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Choose up to 3 toppings&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="toppings[]" value="pepperoni"&gt;
+        Pepperoni
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="toppings[]" value="mushrooms"&gt;
+        Mushrooms
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="toppings[]" value="olives"&gt;
+        Olives
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="toppings[]" value="onions"&gt;
+        Onions
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="toppings[]" value="peppers"&gt;
+        Peppers
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form-required-checkboxes&gt;</code></pre>
+						<div class="demo">
+							<form id="form3">
+								<form-required-checkboxes required="0-3">
+									<fieldset>
+										<legend>Choose up to 3 toppings</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="toppings[]"
+													value="pepperoni"
+												/>
+												Pepperoni
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="toppings[]"
+													value="mushrooms"
+												/>
+												Mushrooms
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="toppings[]"
+													value="olives"
+												/>
+												Olives
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="toppings[]"
+													value="onions"
+												/>
+												Onions
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="toppings[]"
+													value="peppers"
+												/>
+												Peppers
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Submit</button>
+								<button type="reset">Reset</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Custom Messages Example -->
+			<section>
+				<h2>Custom Messages</h2>
+				<p>
+					Override the default notice and error messages with custom
+					text.
+				</p>
+
+				<div class="demo-section">
+					<h3>Custom Notice and Error Messages</h3>
+					<p>
+						Use the <code>notice</code> and
+						<code>error</code> attributes to provide custom
+						messaging.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-required-checkboxes 
+  required="3" 
+  notice="Pick exactly 3 colors you like" 
+  error="You must select exactly 3 colors"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Favorite colors&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="colors[]" value="red"&gt;
+        Red
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="colors[]" value="blue"&gt;
+        Blue
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="colors[]" value="green"&gt;
+        Green
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="colors[]" value="yellow"&gt;
+        Yellow
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="colors[]" value="purple"&gt;
+        Purple
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form-required-checkboxes&gt;</code></pre>
+						<div class="demo">
+							<form id="form4">
+								<form-required-checkboxes
+									required="3"
+									notice="Pick exactly 3 colors you like"
+									error="You must select exactly 3 colors"
+								>
+									<fieldset>
+										<legend>Favorite colors</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="colors[]"
+													value="red"
+												/>
+												Red
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="colors[]"
+													value="blue"
+												/>
+												Blue
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="colors[]"
+													value="green"
+												/>
+												Green
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="colors[]"
+													value="yellow"
+												/>
+												Yellow
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="colors[]"
+													value="purple"
+												/>
+												Purple
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Submit</button>
+								<button type="reset">Reset</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Localization Example -->
+			<section>
+				<h2>Localization</h2>
+				<p>
+					The component supports 16 languages out of the box. Use the
+					<code>lang</code> attribute to set the language.
+				</p>
+
+				<div class="demo-section">
+					<h3>Spanish (Español)</h3>
+					<p>
+						Setting <code>lang="es"</code> displays messages in
+						Spanish.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-required-checkboxes 
+  required="2-4" 
+  lang="es"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Opciones&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="opciones[]" value="1"&gt;
+        Opción 1
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="opciones[]" value="2"&gt;
+        Opción 2
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="opciones[]" value="3"&gt;
+        Opción 3
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="opciones[]" value="4"&gt;
+        Opción 4
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="opciones[]" value="5"&gt;
+        Opción 5
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form-required-checkboxes&gt;</code></pre>
+						<div class="demo">
+							<form id="form5">
+								<form-required-checkboxes
+									required="2-4"
+									lang="es"
+								>
+									<fieldset>
+										<legend>Opciones</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="opciones[]"
+													value="1"
+												/>
+												Opción 1
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="opciones[]"
+													value="2"
+												/>
+												Opción 2
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="opciones[]"
+													value="3"
+												/>
+												Opción 3
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="opciones[]"
+													value="4"
+												/>
+												Opción 4
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="opciones[]"
+													value="5"
+												/>
+												Opción 5
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Enviar</button>
+								<button type="reset">Restablecer</button>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="demo-section">
+					<h3>French (Français)</h3>
+					<p>
+						Setting <code>lang="fr"</code> displays messages in
+						French.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-required-checkboxes 
+  required="3" 
+  lang="fr"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Choix&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="choix[]" value="1"&gt;
+        Choix 1
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="choix[]" value="2"&gt;
+        Choix 2
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="choix[]" value="3"&gt;
+        Choix 3
+      &lt;/label&gt;
+      &lt;label&gt;
+        &lt;input type="checkbox" 
+               name="choix[]" value="4"&gt;
+        Choix 4
+      &lt;/label&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form-required-checkboxes&gt;</code></pre>
+						<div class="demo">
+							<form id="form6">
+								<form-required-checkboxes
+									required="3"
+									lang="fr"
+								>
+									<fieldset>
+										<legend>Choix</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="choix[]"
+													value="1"
+												/>
+												Choix 1
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="choix[]"
+													value="2"
+												/>
+												Choix 2
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="choix[]"
+													value="3"
+												/>
+												Choix 3
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="choix[]"
+													value="4"
+												/>
+												Choix 4
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Soumettre</button>
+								<button type="reset">Réinitialiser</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Multi-Field Form Example -->
+			<section>
+				<h2>Complete Form Example</h2>
+				<p>
+					The component works seamlessly with other form fields and
+					validation.
+				</p>
+
+				<div class="demo-section">
+					<h3>Form with Multiple Fields</h3>
+					<p>
+						This demonstrates how the component integrates with
+						standard form fields. The validation runs in the correct
+						order.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form&gt;
+  &lt;label&gt;
+    Email address
+    &lt;input type="email" 
+           required 
+           name="email"&gt;
+  &lt;/label&gt;
+
+  &lt;form-required-checkboxes required="3"&gt;
+    &lt;fieldset&gt;
+      &lt;legend&gt;Choose 3 preferences&lt;/legend&gt;
+      &lt;div&gt;
+        &lt;label&gt;
+          &lt;input type="checkbox" 
+                 name="prefs[]" value="1"&gt;
+          Option 1
+        &lt;/label&gt;
+        &lt;label&gt;
+          &lt;input type="checkbox" 
+                 name="prefs[]" value="2"&gt;
+          Option 2
+        &lt;/label&gt;
+        &lt;label&gt;
+          &lt;input type="checkbox" 
+                 name="prefs[]" value="3"&gt;
+          Option 3
+        &lt;/label&gt;
+        &lt;label&gt;
+          &lt;input type="checkbox" 
+                 name="prefs[]" value="4"&gt;
+          Option 4
+        &lt;/label&gt;
+        &lt;label&gt;
+          &lt;input type="checkbox" 
+                 name="prefs[]" value="5"&gt;
+          Option 5
+        &lt;/label&gt;
+      &lt;/div&gt;
+    &lt;/fieldset&gt;
+  &lt;/form-required-checkboxes&gt;
+
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+						<div class="demo">
+							<form id="form7">
+								<label>
+									Email address
+									<input type="email" required name="email" />
+								</label>
+
+								<form-required-checkboxes required="3">
+									<fieldset>
+										<legend>Choose 3 preferences</legend>
+										<div>
+											<label>
+												<input
+													type="checkbox"
+													name="prefs[]"
+													value="1"
+												/>
+												Option 1
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="prefs[]"
+													value="2"
+												/>
+												Option 2
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="prefs[]"
+													value="3"
+												/>
+												Option 3
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="prefs[]"
+													value="4"
+												/>
+												Option 4
+											</label>
+											<label>
+												<input
+													type="checkbox"
+													name="prefs[]"
+													value="5"
+												/>
+												Option 5
+											</label>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+
+								<button type="submit">Submit</button>
+								<button type="reset">Reset</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- API Reference -->
+			<section class="api-reference">
+				<h2>API Reference</h2>
+				<p>
+					For complete documentation, see the
+					<a
+						href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
+						>README</a
+					>:
+				</p>
+				<ul>
+					<li>
+						<a
+							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#attributes"
+							>Attributes</a
+						>
+						(<code>required</code>, <code>notice</code>,
+						<code>error</code>, <code>lang</code>)
+					</li>
+					<li>
+						<a
+							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#static-methods"
+							>Static Methods</a
+						>
+						(<code>registerTranslations</code>)
+					</li>
+					<li>
+						<a
+							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#localization"
+							>Localization</a
+						>
+						(16 supported languages)
+					</li>
+					<li>
+						<a
+							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#browser-support"
+							>Browser Support</a
+						>
+					</li>
+					<li>
+						<a
+							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#examples"
+							>More Examples</a
+						>
+					</li>
+				</ul>
+			</section>
+		</main>
+
+		<footer>
+			<p>
+				Made with ❤️ by
+				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
+				View the source on
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes"
+					>GitHub</a
+				>.
+			</p>
+		</footer>
+
+		<script src="../define.js" type="module"></script>
+		<script>
+			// Prevent actual form submission for demo purposes
+			document.body.addEventListener('submit', (e) => {
+				if (e.target.checkValidity()) {
+					e.preventDefault();
+					alert('Form is valid and would have been submitted!');
+				}
+			});
+		</script>
+	</body>
+</html>
