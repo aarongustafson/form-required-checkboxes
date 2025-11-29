@@ -32,4 +32,16 @@ jobs:
         run: npm run test:run
 
       - name: Publish to npm
-        run: npm publish
+        run: npm publish --loglevel verbose
+        continue-on-error: true
+        id: publish
+
+      - name: Upload npm logs on failure
+        if: failure()
+        run: |
+          echo "=== NPM Debug Log ==="
+          cat ~/.npm/_logs/*-debug*.log || echo "No log file found"
+
+      - name: Fail if publish failed
+        if: steps.publish.outcome == 'failure'
+        run: exit 1
