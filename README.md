@@ -1,6 +1,12 @@
 # Required Checkboxes Web Component
 
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-required-checkboxes.svg)](https://www.npmjs.com/package/@aarongustafson/form-required-checkboxes) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-required-checkboxes/ci.yml?branch=main)](https://github.com/aarongustafson/form-required-checkboxes/actions)
+
 Currently, we can only make checkboxes required or not, individually. In some cases you need to be able to set a specific number of checkboxes that need to be checked. The `form-required-checkboxes` web component enables that.
+
+## Demo
+
+[Live Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
 
 ## Installation
 
@@ -233,10 +239,6 @@ This web component assumes you will be marking up your checkbox group in a `fiel
   </fieldset>
 </form-required-checkboxes>
 ```
-
-## Demo
-
-[Live Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
 
 ## Browser Support
 
