@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>form-required-checkboxes via unpkg</title>
+		<style>
+			body {
+				font-family: system-ui, sans-serif;
+				margin: 2rem;
+				line-height: 1.5;
+			}
+
+			form-required-checkboxes {
+				display: block;
+				max-width: 460px;
+			}
+
+			fieldset {
+				border: 1px solid #ccc;
+				padding: 1rem;
+			}
+
+			label {
+				display: block;
+				margin-block: 0.25rem;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>unpkg CDN sanity check</h1>
+		<p>
+			This page loads the guarded definition helper from
+			<code>unpkg</code> and registers the element when supported.
+		</p>
+
+		<form-required-checkboxes required="2-3">
+			<fieldset>
+				<legend>Select 2 or 3 toppings</legend>
+				<label
+					><input type="checkbox" name="toppings" value="pepperoni" />
+					Pepperoni</label
+				>
+				<label
+					><input type="checkbox" name="toppings" value="mushroom" />
+					Mushroom</label
+				>
+				<label
+					><input type="checkbox" name="toppings" value="olive" />
+					Olive</label
+				>
+				<label
+					><input type="checkbox" name="toppings" value="onion" />
+					Onion</label
+				>
+			</fieldset>
+		</form-required-checkboxes>
+
+		<script type="module">
+			import { defineFormRequiredCheckboxes } from 'https://unpkg.com/@aarongustafson/form-required-checkboxes@latest/define.js?module';
+
+			defineFormRequiredCheckboxes();
+		</script>
+	</body>
+</html>
