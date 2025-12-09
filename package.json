@@ -1,6 +1,6 @@
 {
 	"name": "@aarongustafson/form-required-checkboxes",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "Web component that enables requirement rules for checkbox groups.",
 	"keywords": [
 		"html",
@@ -61,7 +61,8 @@
 		"lint:eslint": "eslint .",
 		"format:eslint": "eslint . --fix",
 		"lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
-		"format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore"
+		"format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
+		"version": "node scripts/update-demo-versions.js && git add demo/esm.html"
 	},
 	"devDependencies": {
 		"@open-wc/eslint-config": "^13.0.0",
