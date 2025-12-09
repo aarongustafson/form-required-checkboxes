@@ -11,6 +11,7 @@ const packageJson = JSON.parse(
 	readFileSync(join(rootDir, 'package.json'), 'utf-8'),
 );
 const version = packageJson.version;
+const packageName = packageJson.name;
 
 // Update esm.html
 const esmPath = join(rootDir, 'demo', 'esm.html');
@@ -18,8 +19,8 @@ let esmContent = readFileSync(esmPath, 'utf-8');
 
 // Replace version in the esm.sh URL
 esmContent = esmContent.replace(
-	/@aarongustafson\/form-required-checkboxes@[\d.]+\//g,
-	`@aarongustafson/form-required-checkboxes@${version}/`,
+	new RegExp(`${packageName}@[\\d.]+\\/`, 'g'),
+	`${packageName}@${version}/`,
 );
 
 writeFileSync(esmPath, esmContent, 'utf-8');
