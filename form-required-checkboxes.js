@@ -1,4 +1,4 @@
-import defaultTranslations from './translations.json' with { type: 'json' };
+import defaultTranslations from './translations.js';
 
 export class FormRequiredCheckboxesElement extends HTMLElement {
 	// Static property for custom translations
