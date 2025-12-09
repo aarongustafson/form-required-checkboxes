@@ -4,9 +4,11 @@
 
 Currently, we can only make checkboxes required or not, individually. In some cases you need to be able to set a specific number of checkboxes that need to be checked. The `form-required-checkboxes` web component enables that.
 
-## Demo
+## Demos
 
-[Live Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
+* [Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
+* [Unpkg.com Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/unpkg.html) ([Source](./demo/unpkg.html))
+* [ESM.sh Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/esm.html) ([Source](./demo/esm.html))
 
 ## Installation
 
