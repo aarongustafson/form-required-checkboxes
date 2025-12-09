@@ -34,27 +34,29 @@
 			<code>unpkg</code> and registers the element when supported.
 		</p>
 
-		<form-required-checkboxes required="2-3">
-			<fieldset>
-				<legend>Select 2 or 3 toppings</legend>
-				<label
-					><input type="checkbox" name="toppings" value="pepperoni" />
-					Pepperoni</label
-				>
-				<label
-					><input type="checkbox" name="toppings" value="mushroom" />
-					Mushroom</label
-				>
-				<label
-					><input type="checkbox" name="toppings" value="olive" />
-					Olive</label
-				>
-				<label
-					><input type="checkbox" name="toppings" value="onion" />
-					Onion</label
-				>
-			</fieldset>
-		</form-required-checkboxes>
+		<form>
+			<form-required-checkboxes required="2-3">
+				<fieldset>
+					<legend>Select 2 or 3 toppings</legend>
+					<label
+						><input type="checkbox" name="toppings" value="pepperoni" />
+						Pepperoni</label
+					>
+					<label
+						><input type="checkbox" name="toppings" value="mushroom" />
+						Mushroom</label
+					>
+					<label
+						><input type="checkbox" name="toppings" value="olive" />
+						Olive</label
+					>
+					<label
+						><input type="checkbox" name="toppings" value="onion" />
+						Onion</label
+					>
+				</fieldset>
+			</form-required-checkboxes>
+		</form>
 
 		<script type="module">
 			import { defineFormRequiredCheckboxes } from 'https://unpkg.com/@aarongustafson/form-required-checkboxes@latest/define.js?module';
