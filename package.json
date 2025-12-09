@@ -42,6 +42,7 @@
 		"form-required-checkboxes.js",
 		"define.js",
 		"index.js",
+		"translations.js",
 		"translations.json",
 		"custom-elements.json",
 		"README.md",
