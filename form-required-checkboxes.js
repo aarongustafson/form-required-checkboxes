@@ -114,9 +114,15 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		}
 
 		this.__$description.innerText = this.__notice;
-		(this.__$fieldset ? this.__$fieldset : this).appendChild(
-			this.__$description,
-		);
+
+		// Insert after legend if it exists, otherwise append to fieldset/element
+		if (this.__$legend) {
+			this.__$legend.after(this.__$description);
+		} else {
+			(this.__$fieldset ? this.__$fieldset : this).appendChild(
+				this.__$description,
+			);
+		}
 	}
 
 	__setupAccessibleName() {
