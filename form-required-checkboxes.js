@@ -138,7 +138,7 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	__setupValidation() {
 		this.__$form = this.closest('form');
 		this.__$target = this.__$form || document.body;
-		
+
 		this.__$target.addEventListener(
 			'formdata',
 			this.__handleValidation.bind(this),
@@ -172,7 +172,7 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		if (!this.__$form) {
 			return true;
 		}
-		
+
 		const $all_fields = [...this.__$form.elements].filter((element) =>
 			element.matches(
 				'input:not([type=submit],[type=reset]),textarea,select',

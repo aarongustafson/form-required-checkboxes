@@ -164,15 +164,22 @@ describe('FormRequiredCheckboxesElement', () => {
 			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const element = container.querySelector('form-required-checkboxes');
-			const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-			
+			const checkboxes = container.querySelectorAll(
+				'input[type="checkbox"]',
+			);
+
 			// Create and dispatch submit event on document.body
-			const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+			const submitEvent = new Event('submit', {
+				bubbles: true,
+				cancelable: true,
+			});
 			let prevented = false;
-			submitEvent.preventDefault = () => { prevented = true; };
-			
+			submitEvent.preventDefault = () => {
+				prevented = true;
+			};
+
 			document.body.dispatchEvent(submitEvent);
-			
+
 			expect(prevented).toBe(true);
 			expect(checkboxes[0].validationMessage).toBeTruthy();
 		});
@@ -192,15 +199,17 @@ describe('FormRequiredCheckboxesElement', () => {
 			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const element = container.querySelector('form-required-checkboxes');
-			const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-			
+			const checkboxes = container.querySelectorAll(
+				'input[type="checkbox"]',
+			);
+
 			// Set invalid state
 			checkboxes[0].setCustomValidity('Error');
 			expect(checkboxes[0].validationMessage).toBeTruthy();
-			
+
 			// Trigger change event
 			checkboxes[0].dispatchEvent(new Event('change', { bubbles: true }));
-			
+
 			expect(checkboxes[0].validationMessage).toBe('');
 		});
 
@@ -218,7 +227,7 @@ describe('FormRequiredCheckboxesElement', () => {
 
 			const element = container.querySelector('form-required-checkboxes');
 			const checkbox = container.querySelector('input[type="checkbox"]');
-			
+
 			expect(element.__shouldShowFieldError(checkbox)).toBe(true);
 		});
 	});
