@@ -128,4 +128,98 @@ describe('FormRequiredCheckboxesElement', () => {
 			'Você deve escolher exatamente {n} opções',
 		);
 	});
+
+	describe('No form element', () => {
+		it('should attach event listeners to document.body when not in a form', async () => {
+			container.innerHTML = `
+				<form-required-checkboxes required="2">
+					<fieldset>
+						<legend>Select options</legend>
+						<label><input type="checkbox" name="test[]" value="1"> Option 1</label>
+						<label><input type="checkbox" name="test[]" value="2"> Option 2</label>
+						<label><input type="checkbox" name="test[]" value="3"> Option 3</label>
+					</fieldset>
+				</form-required-checkboxes>
+			`;
+
+			await new Promise((resolve) => setTimeout(resolve, 10));
+
+			const element = container.querySelector('form-required-checkboxes');
+			expect(element.__$form).toBeNull();
+			expect(element.__$target).toBe(document.body);
+		});
+
+		it('should validate and prevent submission when not in a form', async () => {
+			container.innerHTML = `
+				<form-required-checkboxes required="2">
+					<fieldset>
+						<legend>Select options</legend>
+						<label><input type="checkbox" name="test[]" value="1"> Option 1</label>
+						<label><input type="checkbox" name="test[]" value="2"> Option 2</label>
+						<label><input type="checkbox" name="test[]" value="3"> Option 3</label>
+					</fieldset>
+				</form-required-checkboxes>
+			`;
+
+			await new Promise((resolve) => setTimeout(resolve, 10));
+
+			const element = container.querySelector('form-required-checkboxes');
+			const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+			
+			// Create and dispatch submit event on document.body
+			const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+			let prevented = false;
+			submitEvent.preventDefault = () => { prevented = true; };
+			
+			document.body.dispatchEvent(submitEvent);
+			
+			expect(prevented).toBe(true);
+			expect(checkboxes[0].validationMessage).toBeTruthy();
+		});
+
+		it('should reset validity when checkboxes change and not in a form', async () => {
+			container.innerHTML = `
+				<form-required-checkboxes required="2">
+					<fieldset>
+						<legend>Select options</legend>
+						<label><input type="checkbox" name="test[]" value="1"> Option 1</label>
+						<label><input type="checkbox" name="test[]" value="2"> Option 2</label>
+						<label><input type="checkbox" name="test[]" value="3"> Option 3</label>
+					</fieldset>
+				</form-required-checkboxes>
+			`;
+
+			await new Promise((resolve) => setTimeout(resolve, 10));
+
+			const element = container.querySelector('form-required-checkboxes');
+			const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+			
+			// Set invalid state
+			checkboxes[0].setCustomValidity('Error');
+			expect(checkboxes[0].validationMessage).toBeTruthy();
+			
+			// Trigger change event
+			checkboxes[0].dispatchEvent(new Event('change', { bubbles: true }));
+			
+			expect(checkboxes[0].validationMessage).toBe('');
+		});
+
+		it('should always show field error when not in a form', async () => {
+			container.innerHTML = `
+				<form-required-checkboxes required="2">
+					<fieldset>
+						<legend>Select options</legend>
+						<label><input type="checkbox" name="test[]" value="1"> Option 1</label>
+					</fieldset>
+				</form-required-checkboxes>
+			`;
+
+			await new Promise((resolve) => setTimeout(resolve, 10));
+
+			const element = container.querySelector('form-required-checkboxes');
+			const checkbox = container.querySelector('input[type="checkbox"]');
+			
+			expect(element.__shouldShowFieldError(checkbox)).toBe(true);
+		});
+	});
 });

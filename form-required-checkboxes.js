@@ -137,11 +137,13 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 
 	__setupValidation() {
 		this.__$form = this.closest('form');
-		this.__$form.addEventListener(
+		this.__$target = this.__$form || document.body;
+		
+		this.__$target.addEventListener(
 			'formdata',
 			this.__handleValidation.bind(this),
 		);
-		this.__$form.addEventListener(
+		this.__$target.addEventListener(
 			'submit',
 			this.__handleValidation.bind(this),
 		);
@@ -166,6 +168,11 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	}
 
 	__shouldShowFieldError(input) {
+		// If no form exists, always show the error
+		if (!this.__$form) {
+			return true;
+		}
+		
 		const $all_fields = [...this.__$form.elements].filter((element) =>
 			element.matches(
 				'input:not([type=submit],[type=reset]),textarea,select',
@@ -188,8 +195,9 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	}
 
 	__resetValidity() {
+		const target = this.__$form || this;
 		[
-			...this.__$form.querySelectorAll(
+			...target.querySelectorAll(
 				`${this.__element_name} [type=checkbox]`,
 			),
 		].map((input) => input.setCustomValidity(''));
