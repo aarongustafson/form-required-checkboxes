@@ -5,9 +5,7 @@ on:
     branches: [main]
     paths:
       - "demo/**"
-      - "form-obfuscator.js"
-      - "define.js"
-      - "index.js"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
