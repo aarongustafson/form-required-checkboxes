@@ -4,6 +4,14 @@
 
 Currently, we can only make checkboxes required or not, individually. In some cases you need to be able to set a specific number of checkboxes that need to be checked. The `form-required-checkboxes` web component enables that.
 
+## TypeScript & Framework Support
+
+This component ships with full TypeScript definitions (`.d.ts`), enabling type-safe usage in TypeScript projects and improved autocompletion in editors. Types are exported in the package and automatically picked up by modern build tools.
+
+### Property Reflection & Framework Compatibility
+
+All key properties (`required`, `notice`, `error`, `lang`) are now fully reflected as attributes, ensuring compatibility with frameworks and declarative usage. The component also implements an internal `_upgradeProperty` method for seamless property/attribute sync when used with frameworks that set properties before element definition.
+
 ## Demos
 
 * [Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
@@ -276,3 +284,15 @@ npm run lint
 # Format code
 npm run format
 ```
+
+---
+
+## Changelog
+
+### 3.1.0 (Unreleased)
+
+- **TypeScript definitions**: Added `.d.ts` file and package export for full TypeScript support.
+- **Property reflection**: All key properties (`required`, `notice`, `error`, `lang`) now reflect as attributes for framework compatibility.
+- **_upgradeProperty**: Ensures property/attribute sync for frameworks that set properties before element definition.
+- **Performance/memory**: Uses `requestAnimationFrame` for initialization, optimizes DOM queries, and ensures all event listeners are cleaned up in `disconnectedCallback`.
+- **Test coverage**: Expanded and improved tests for property reflection, upgrade, and event cleanup.
