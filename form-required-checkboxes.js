@@ -81,7 +81,7 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		this._upgradeProperty('error');
 		this._upgradeProperty('required');
 		this._upgradeProperty('lang');
-		setTimeout(() => {
+		requestAnimationFrame(() => {
 			this.__element_name = this.nodeName.toLowerCase();
 			this.__$checkboxes = this.querySelectorAll("[type='checkbox']");
 			this.__field_name = this.__$checkboxes[0].name;
