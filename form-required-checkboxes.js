@@ -4,6 +4,11 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	// Static property for custom translations
 	static customTranslations = {};
 
+	// Property reflection: observedAttributes
+	static get observedAttributes() {
+		return ['notice', 'error', 'required', 'lang'];
+	}
+
 	// Static method to register custom translations
 	static registerTranslations(translations) {
 		this.customTranslations = {
@@ -11,17 +16,67 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 			...translations,
 		};
 	}
+
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (oldValue === newValue) return;
+		// Optionally, trigger re-initialization or update logic here if needed
+	}
+
+	get notice() {
+		return this.getAttribute('notice');
+	}
+	set notice(val) {
+		if (val === null || val === undefined) {
+			this.removeAttribute('notice');
+		} else {
+			this.setAttribute('notice', val);
+		}
+	}
+
+	get error() {
+		return this.getAttribute('error');
+	}
+	set error(val) {
+		if (val === null || val === undefined) {
+			this.removeAttribute('error');
+		} else {
+			this.setAttribute('error', val);
+		}
+	}
+
+	get required() {
+		return this.getAttribute('required');
+	}
+	set required(val) {
+		if (val === null || val === undefined) {
+			this.removeAttribute('required');
+		} else {
+			this.setAttribute('required', val);
+		}
+	}
+
+	get lang() {
+		return this.getAttribute('lang');
+	}
+	set lang(val) {
+		if (val === null || val === undefined) {
+			this.removeAttribute('lang');
+		} else {
+			this.setAttribute('lang', val);
+		}
+	}
+
 	connectedCallback() {
 		setTimeout(() => {
 			this.__element_name = this.nodeName.toLowerCase();
 			this.__$checkboxes = this.querySelectorAll("[type='checkbox']");
 			this.__field_name = this.__$checkboxes[0].name;
-			this.__notice = this.getAttribute('notice');
-			this.__error = this.getAttribute('error');
+			this.__notice = this.notice;
+			this.__error = this.error;
 			this.__$fieldset = this.querySelector('fieldset');
 			this.__$legend = this.querySelector('legend');
 			this.__lang =
-				this.getAttribute('lang') ||
+				this.lang ||
 				this.closest('[lang]')?.getAttribute('lang') ||
 				document.documentElement.lang ||
 				'en';
