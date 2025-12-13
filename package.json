@@ -41,10 +41,10 @@
 	},
 	"files": [
 		"form-required-checkboxes.js",
+		"form-required-checkboxes.d.ts",
 		"define.js",
 		"index.js",
 		"translations.js",
-		"translations.json",
 		"custom-elements.json",
 		"README.md",
 		"LICENSE"
