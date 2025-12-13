@@ -231,4 +231,101 @@ describe('FormRequiredCheckboxesElement', () => {
 			expect(element.__shouldShowFieldError(checkbox)).toBe(true);
 		});
 	});
+
+	describe('Property reflection and lifecycle', () => {
+		it('should reflect properties to attributes and vice versa', () => {
+			const element = document.createElement('form-required-checkboxes');
+			element.notice = 'Test Notice';
+			element.error = 'Test Error';
+			element.required = '2';
+			element.lang = 'fr';
+			expect(element.getAttribute('notice')).toBe('Test Notice');
+			expect(element.getAttribute('error')).toBe('Test Error');
+			expect(element.getAttribute('required')).toBe('2');
+			expect(element.getAttribute('lang')).toBe('fr');
+
+			element.setAttribute('notice', 'Attr Notice');
+			element.setAttribute('error', 'Attr Error');
+			element.setAttribute('required', '3');
+			element.setAttribute('lang', 'es');
+			expect(element.notice).toBe('Attr Notice');
+			expect(element.error).toBe('Attr Error');
+			expect(element.required).toBe('3');
+			expect(element.lang).toBe('es');
+		});
+
+		it('should upgrade properties set before definition', () => {
+			// Simulate property set before definition
+			const element = document.createElement('form-required-checkboxes');
+			element.notice = 'Predefined';
+			element.error = 'Predefined';
+			element.required = '5';
+			element.lang = 'de';
+			// Call _upgradeProperty for each
+			element._upgradeProperty('notice');
+			element._upgradeProperty('error');
+			element._upgradeProperty('required');
+			element._upgradeProperty('lang');
+			expect(element.notice).toBe('Predefined');
+			expect(element.error).toBe('Predefined');
+			expect(element.required).toBe('5');
+			expect(element.lang).toBe('de');
+		});
+	});
+
+	describe('Event listener cleanup and reconnect', () => {
+		it('should clean up event listeners on disconnect', async () => {
+			container.innerHTML = `
+				<form-required-checkboxes required="2">
+					<fieldset>
+						<legend>Select options</legend>
+						<label><input type="checkbox" name="test[]" value="1"> Option 1</label>
+						<label><input type="checkbox" name="test[]" value="2"> Option 2</label>
+					</fieldset>
+				</form-required-checkboxes>
+			`;
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			const element = container.querySelector('form-required-checkboxes');
+			const target = element.__$target;
+			const checkboxes = element.__$checkboxes;
+			// Remove from DOM
+			element.remove();
+			// Try to fire events (should not throw)
+			expect(() => {
+				target.dispatchEvent(new Event('formdata'));
+				target.dispatchEvent(new Event('submit'));
+				checkboxes.forEach((input) => {
+					input.dispatchEvent(new Event('change'));
+				});
+			}).not.toThrow();
+		});
+
+		it('should not duplicate event listeners on reconnect', async () => {
+			container.innerHTML = `
+				<form-required-checkboxes required="2">
+					<fieldset>
+						<legend>Select options</legend>
+						<label><input type="checkbox" name="test[]" value="1"> Option 1</label>
+						<label><input type="checkbox" name="test[]" value="2"> Option 2</label>
+					</fieldset>
+				</form-required-checkboxes>
+			`;
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			const element = container.querySelector('form-required-checkboxes');
+			const target = element.__$target;
+			const checkboxes = element.__$checkboxes;
+			// Remove and re-add
+			element.remove();
+			container.appendChild(element);
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			// Should still not throw or duplicate
+			expect(() => {
+				target.dispatchEvent(new Event('formdata'));
+				target.dispatchEvent(new Event('submit'));
+				checkboxes.forEach((input) => {
+					input.dispatchEvent(new Event('change'));
+				});
+			}).not.toThrow();
+		});
+	});
 });
