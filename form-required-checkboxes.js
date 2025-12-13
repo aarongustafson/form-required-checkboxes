@@ -1,6 +1,9 @@
 import defaultTranslations from './translations.js';
 
 export class FormRequiredCheckboxesElement extends HTMLElement {
+	#boundHandleValidation = null;
+	#boundResetValidity = null;
+
 	// Static property for custom translations
 	static customTranslations = {};
 
@@ -16,7 +19,6 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 			...translations,
 		};
 	}
-
 
 	get notice() {
 		return this.getAttribute('notice');
@@ -95,6 +97,25 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 			this.__setupAccessibleName();
 			this.__setupValidation();
 		});
+	}
+
+	disconnectedCallback() {
+		// Remove event listeners for cleanup
+		if (this.__$target && this.#boundHandleValidation) {
+			this.__$target.removeEventListener(
+				'formdata',
+				this.#boundHandleValidation,
+			);
+			this.__$target.removeEventListener(
+				'submit',
+				this.#boundHandleValidation,
+			);
+		}
+		if (this.__$checkboxes && this.#boundResetValidity) {
+			this.__$checkboxes.forEach((input) => {
+				input.removeEventListener('change', this.#boundResetValidity);
+			});
+		}
 	}
 
 	__getTranslations() {
@@ -187,8 +208,13 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 				this.__$legend.after(this.__$description);
 			}
 		} else {
-			if ((this.__$fieldset ? this.__$fieldset : this).lastChild !== this.__$description) {
-				(this.__$fieldset ? this.__$fieldset : this).appendChild(this.__$description);
+			if (
+				(this.__$fieldset ? this.__$fieldset : this).lastChild !==
+				this.__$description
+			) {
+				(this.__$fieldset ? this.__$fieldset : this).appendChild(
+					this.__$description,
+				);
 			}
 		}
 	}
@@ -208,17 +234,22 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		this.__$form = this.closest('form');
 		this.__$target = this.__$form || document.body;
 
+		// Bind handlers once
+		if (!this.#boundHandleValidation) {
+			this.#boundHandleValidation = this.__handleValidation.bind(this);
+		}
+		if (!this.#boundResetValidity) {
+			this.#boundResetValidity = this.__resetValidity.bind(this);
+		}
+
 		this.__$target.addEventListener(
 			'formdata',
-			this.__handleValidation.bind(this),
+			this.#boundHandleValidation,
 		);
-		this.__$target.addEventListener(
-			'submit',
-			this.__handleValidation.bind(this),
-		);
-		[...this.__$checkboxes].map((input) =>
-			input.addEventListener('change', this.__resetValidity.bind(this)),
-		);
+		this.__$target.addEventListener('submit', this.#boundHandleValidation);
+		this.__$checkboxes.forEach((input) => {
+			input.addEventListener('change', this.#boundResetValidity);
+		});
 	}
 
 	__handleValidation(e) {
