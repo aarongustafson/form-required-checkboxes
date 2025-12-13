@@ -31,7 +31,8 @@
 			"import": "./index.js"
 		},
 		"./form-required-checkboxes.js": {
-			"import": "./form-required-checkboxes.js"
+			"import": "./form-required-checkboxes.js",
+			"types": "./form-required-checkboxes.d.ts"
 		},
 		"./define.js": {
 			"import": "./define.js"
