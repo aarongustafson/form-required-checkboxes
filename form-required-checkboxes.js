@@ -66,7 +66,21 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		}
 	}
 
+	// Instance helper methods below accessors
+	_upgradeProperty(prop) {
+		if (Object.prototype.hasOwnProperty.call(this, prop)) {
+			const value = this[prop];
+			delete this[prop];
+			this[prop] = value;
+		}
+	}
+
 	connectedCallback() {
+		// Upgrade properties set before element definition
+		this._upgradeProperty('notice');
+		this._upgradeProperty('error');
+		this._upgradeProperty('required');
+		this._upgradeProperty('lang');
 		setTimeout(() => {
 			this.__element_name = this.nodeName.toLowerCase();
 			this.__$checkboxes = this.querySelectorAll("[type='checkbox']");
