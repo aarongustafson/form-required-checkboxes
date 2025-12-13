@@ -17,10 +17,6 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		};
 	}
 
-	attributeChangedCallback(name, oldValue, newValue) {
-		if (oldValue === newValue) return;
-		// Optionally, trigger re-initialization or update logic here if needed
-	}
 
 	get notice() {
 		return this.getAttribute('notice');
@@ -141,7 +137,6 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 
 		if (!this.__notice) {
 			const t = this.__getTranslations();
-
 			if (this.__min == this.__max) {
 				this.__notice = FormRequiredCheckboxesElement.__interpolate(
 					t.exact,
@@ -165,7 +160,6 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 
 		if (!this.__error) {
 			const t = this.__getTranslations();
-
 			if (this.__min == this.__max) {
 				this.__error = FormRequiredCheckboxesElement.__interpolate(
 					t.error_exact,
@@ -182,15 +176,20 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 			}
 		}
 
-		this.__$description.innerText = this.__notice;
+		// Only update innerText if changed
+		if (this.__$description.innerText !== this.__notice) {
+			this.__$description.innerText = this.__notice;
+		}
 
-		// Insert after legend if it exists, otherwise append to fieldset/element
+		// Only insert if not already present
 		if (this.__$legend) {
-			this.__$legend.after(this.__$description);
+			if (this.__$legend.nextSibling !== this.__$description) {
+				this.__$legend.after(this.__$description);
+			}
 		} else {
-			(this.__$fieldset ? this.__$fieldset : this).appendChild(
-				this.__$description,
-			);
+			if ((this.__$fieldset ? this.__$fieldset : this).lastChild !== this.__$description) {
+				(this.__$fieldset ? this.__$fieldset : this).appendChild(this.__$description);
+			}
 		}
 	}
 
@@ -198,10 +197,11 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 		if (this.__$legend && !this.__$legend.id) {
 			this.__$legend.id = `${this.__field_name.replace('[]', '')}-legend`;
 		}
-		(this.__$fieldset ? this.__$fieldset : this).setAttribute(
-			'aria-labelledby',
-			`${this.__$legend ? this.__$legend.id : ''} ${this.__$description.id}`,
-		);
+		const labelValue = `${this.__$legend ? this.__$legend.id : ''} ${this.__$description.id}`;
+		const target = this.__$fieldset ? this.__$fieldset : this;
+		if (target.getAttribute('aria-labelledby') !== labelValue) {
+			target.setAttribute('aria-labelledby', labelValue);
+		}
 	}
 
 	__setupValidation() {
@@ -264,11 +264,9 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	}
 
 	__resetValidity() {
-		const target = this.__$form || this;
-		[
-			...target.querySelectorAll(
-				`${this.__element_name} [type=checkbox]`,
-			),
-		].map((input) => input.setCustomValidity(''));
+		// Use cached checkboxes for validity reset
+		if (this.__$checkboxes) {
+			this.__$checkboxes.forEach((input) => input.setCustomValidity(''));
+		}
 	}
 }
