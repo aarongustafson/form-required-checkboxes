@@ -26,6 +26,7 @@
 	"main": "index.js",
 	"module": "form-required-checkboxes.js",
 	"customElements": "custom-elements.json",
+	"types": "form-required-checkboxes.d.ts",
 	"exports": {
 		".": {
 			"import": "./index.js"
