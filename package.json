@@ -1,6 +1,6 @@
 {
 	"name": "@aarongustafson/form-required-checkboxes",
-	"version": "3.2.3",
+	"version": "3.2.4",
 	"description": "Web component that enables requirement rules for checkbox groups.",
 	"keywords": [
 		"html",
