@@ -27,9 +27,7 @@
 			<h1>&lt;form-required-checkboxes&gt;</h1>
 			<p>
 				A web component that enables requirement rules for checkbox
-				groups. Enforce exact numbers or ranges of required checkbox
-				selections with built-in validation and multi-language support.
-				See the
+				groups. See the
 				<a
 					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
 					>README</a
@@ -39,6 +37,12 @@
 		</header>
 
 		<main>
+			<p class="note">
+				The checkboxes work before enhancement. Selection-count
+				validation needs JavaScript; if the module doesn’t load, follow
+				the limits in each legend. Applications must also validate
+				selections on the server.
+			</p>
 			<!-- Exact Number Example -->
 			<section>
 				<h2>Exact Number Required</h2>
@@ -137,6 +141,10 @@
 								</form-required-checkboxes>
 								<button type="submit">Submit</button>
 								<button type="reset">Reset</button>
+								<p class="form-result" role="status" hidden>
+									Valid selections. This demo hasn’t sent your
+									data.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -253,6 +261,10 @@
 								</form-required-checkboxes>
 								<button type="submit">Submit</button>
 								<button type="reset">Reset</button>
+								<p class="form-result" role="status" hidden>
+									Valid selections. This demo hasn’t sent your
+									data.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -358,6 +370,10 @@
 								</form-required-checkboxes>
 								<button type="submit">Submit</button>
 								<button type="reset">Reset</button>
+								<p class="form-result" role="status" hidden>
+									Valid selections. This demo hasn’t sent your
+									data.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -385,7 +401,7 @@
   notice="Pick exactly 3 colors you like" 
   error="You must select exactly 3 colors"&gt;
   &lt;fieldset&gt;
-    &lt;legend&gt;Favorite colors&lt;/legend&gt;
+    &lt;legend&gt;Favorite colors (choose exactly 3)&lt;/legend&gt;
     &lt;div&gt;
       &lt;label&gt;
         &lt;input type="checkbox" 
@@ -423,7 +439,9 @@
 									error="You must select exactly 3 colors"
 								>
 									<fieldset>
-										<legend>Favorite colors</legend>
+										<legend>
+											Favorite colors (choose exactly 3)
+										</legend>
 										<div>
 											<label>
 												<input
@@ -470,6 +488,10 @@
 								</form-required-checkboxes>
 								<button type="submit">Submit</button>
 								<button type="reset">Reset</button>
+								<p class="form-result" role="status" hidden>
+									Valid selections. This demo hasn’t sent your
+									data.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -495,7 +517,7 @@
   required="2-4" 
   lang="es"&gt;
   &lt;fieldset&gt;
-    &lt;legend&gt;Opciones&lt;/legend&gt;
+    &lt;legend&gt;Opciones (elige de 2 a 4)&lt;/legend&gt;
     &lt;div&gt;
       &lt;label&gt;
         &lt;input type="checkbox" 
@@ -532,7 +554,9 @@
 									lang="es"
 								>
 									<fieldset>
-										<legend>Opciones</legend>
+										<legend>
+											Opciones (elige de 2 a 4)
+										</legend>
 										<div>
 											<label>
 												<input
@@ -579,6 +603,15 @@
 								</form-required-checkboxes>
 								<button type="submit">Enviar</button>
 								<button type="reset">Restablecer</button>
+								<p
+									class="form-result"
+									role="status"
+									lang="es"
+									hidden
+								>
+									Selecciones válidas. Esta demostración no ha
+									enviado tus datos.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -595,7 +628,7 @@
   required="3" 
   lang="fr"&gt;
   &lt;fieldset&gt;
-    &lt;legend&gt;Choix&lt;/legend&gt;
+    &lt;legend&gt;Choix (choisissez-en 3)&lt;/legend&gt;
     &lt;div&gt;
       &lt;label&gt;
         &lt;input type="checkbox" 
@@ -627,7 +660,7 @@
 									lang="fr"
 								>
 									<fieldset>
-										<legend>Choix</legend>
+										<legend>Choix (choisissez-en 3)</legend>
 										<div>
 											<label>
 												<input
@@ -666,6 +699,15 @@
 								</form-required-checkboxes>
 								<button type="submit">Soumettre</button>
 								<button type="reset">Réinitialiser</button>
+								<p
+									class="form-result"
+									role="status"
+									lang="fr"
+									hidden
+								>
+									Choix valides. Cette démonstration n’a pas
+									envoyé vos données.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -676,8 +718,7 @@
 			<section>
 				<h2>Complete Form Example</h2>
 				<p>
-					The component works seamlessly with other form fields and
-					validation.
+					The component works with other form fields and validation.
 				</p>
 
 				<div class="demo-section">
@@ -788,6 +829,10 @@
 
 								<button type="submit">Submit</button>
 								<button type="reset">Reset</button>
+								<p class="form-result" role="status" hidden>
+									Valid selections. This demo hasn’t sent your
+									data.
+								</p>
 							</form>
 						</div>
 					</div>
@@ -856,14 +901,6 @@
 		</footer>
 
 		<script src="../define.js" type="module"></script>
-		<script>
-			// Prevent actual form submission for demo purposes
-			document.body.addEventListener('submit', (e) => {
-				if (e.target.checkValidity()) {
-					e.preventDefault();
-					alert('Form is valid and would have been submitted!');
-				}
-			});
-		</script>
+		<script src="./demo.js" defer></script>
 	</body>
 </html>
