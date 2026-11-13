@@ -11,7 +11,7 @@ export default [
 		},
 	},
 	{
-		files: ['**/*.test.js', 'test/**/*.js', 'vitest.config.js'],
+		files: ['**/*.test.js', 'test/**/*.js', '*config.js'],
 		rules: {
 			'import-x/no-extraneous-dependencies': [
 				'error',

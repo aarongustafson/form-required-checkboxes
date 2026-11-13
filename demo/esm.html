@@ -7,46 +7,114 @@
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
-		<h1>esm.sh CDN sanity check</h1>
-		<p>
-			This page loads the component class from <code>esm.sh</code> and
-			registers it manually.
-		</p>
+		<header>
+			<h1>&lt;form-required-checkboxes&gt; via esm.sh</h1>
+			<p>
+				Import the class and register it manually.
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
+					>README</a
+				>
+			</p>
+		</header>
+		<main>
+			<p class="note">
+				The checkboxes work before enhancement. Selection-count
+				validation needs JavaScript; if the module doesn’t load, follow
+				the limits in the legend. Applications must also validate
+				selections on the server.
+			</p>
+			<section class="demo-section">
+				<h2>Manual registration</h2>
+				<p>
+					The class-only import doesn’t register the element. Call
+					<code>customElements.define()</code> once before using it.
+				</p>
+				<div class="code-demo-pair">
+					<pre><code><mark>import { FormRequiredCheckboxesElement } from
+  'https://esm.sh/@aarongustafson/form-required-checkboxes@3.2.5/form-required-checkboxes.js?bundle&amp;target=es2022';</mark>
 
-		<form>
-			<form-required-checkboxes required="2-3">
-				<fieldset>
-					<legend>Select 2 or 3 toppings</legend>
-					<label
-						><input
-							type="checkbox"
-							name="toppings"
-							value="pepperoni"
-						/>
-						Pepperoni</label
-					>
-					<label
-						><input
-							type="checkbox"
-							name="toppings"
-							value="mushroom"
-						/>
-						Mushroom</label
-					>
-					<label
-						><input type="checkbox" name="toppings" value="olive" />
-						Olive</label
-					>
-					<label
-						><input type="checkbox" name="toppings" value="onion" />
-						Onion</label
-					>
-				</fieldset>
-			</form-required-checkboxes>
-			<button type="submit">Submit</button>
-			<button type="reset">Reset</button>
-		</form>
+<mark>if (!customElements.get('form-required-checkboxes')) {
+  customElements.define(
+    'form-required-checkboxes',
+    FormRequiredCheckboxesElement
+  );
+}</mark>
 
+&lt;form&gt;
+  <mark>&lt;form-required-checkboxes required="2-3"&gt;</mark>
+    &lt;fieldset&gt;
+      &lt;legend&gt;Select 2 or 3 toppings&lt;/legend&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="toppings" value="pepperoni"&gt; Pepperoni&lt;/label&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="toppings" value="mushroom"&gt; Mushroom&lt;/label&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="toppings" value="olive"&gt; Olive&lt;/label&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="toppings" value="onion"&gt; Onion&lt;/label&gt;
+    &lt;/fieldset&gt;
+  <mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+					<div class="demo">
+						<form>
+							<form-required-checkboxes required="2-3">
+								<fieldset>
+									<legend>Select 2 or 3 toppings</legend>
+									<label
+										><input
+											type="checkbox"
+											name="toppings"
+											value="pepperoni"
+										/>
+										Pepperoni</label
+									>
+									<label
+										><input
+											type="checkbox"
+											name="toppings"
+											value="mushroom"
+										/>
+										Mushroom</label
+									>
+									<label
+										><input
+											type="checkbox"
+											name="toppings"
+											value="olive"
+										/>
+										Olive</label
+									>
+									<label
+										><input
+											type="checkbox"
+											name="toppings"
+											value="onion"
+										/>
+										Onion</label
+									>
+								</fieldset>
+							</form-required-checkboxes>
+							<button type="submit">Submit</button>
+							<button type="reset">Reset</button>
+							<p class="form-result" role="status" hidden>
+								Valid selections. This demo hasn’t sent your
+								data.
+							</p>
+						</form>
+					</div>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<p>
+				Made with ❤️ by
+				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
+				View the source on
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes"
+					>GitHub</a
+				>.
+			</p>
+		</footer>
 		<script type="module">
 			import { FormRequiredCheckboxesElement } from 'https://esm.sh/@aarongustafson/form-required-checkboxes@3.2.5/form-required-checkboxes.js?bundle&target=es2022';
 
@@ -56,14 +124,7 @@
 					FormRequiredCheckboxesElement,
 				);
 			}
-
-			// Prevent actual form submission for demo purposes
-			document.body.addEventListener('submit', (e) => {
-				if (e.target.checkValidity()) {
-					e.preventDefault();
-					alert('Form is valid and would have been submitted!');
-				}
-			});
 		</script>
+		<script src="./demo.js" defer></script>
 	</body>
 </html>
