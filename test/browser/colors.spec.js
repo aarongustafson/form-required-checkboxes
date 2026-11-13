@@ -397,11 +397,16 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 			await first.evaluate((input) => input.validationMessage),
 		).not.toBe('');
 		await expect(form.locator('.form-result')).toBeHidden();
+		// Dismiss native validation UI before recovering with the keyboard.
+		await page.keyboard.press('Escape');
 		for (const box of (await boxes.all()).slice(
 			1,
 			name === 'index.html' ? 3 : 2,
-		))
-			await box.check();
+		)) {
+			await box.focus();
+			await page.keyboard.press('Space');
+			await expect(box).toBeChecked();
+		}
 		expect(await first.evaluate((input) => input.validity.valid)).toBe(
 			true,
 		);
