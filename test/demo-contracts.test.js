@@ -1,18 +1,17 @@
 import { readFile } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { it, expect } from 'vitest';
+import {
+	parseCode,
+	codeTextHashes,
+	componentSnippets,
+} from './helpers/demo-code.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(resolve(root, path), 'utf8');
-const parseCode = (html) =>
-	new DOMParser().parseFromString(
-		(html.match(/<pre\b[^>]*>[\s\S]*?<\/pre>/g) || []).join(''),
-		'text/html',
-	);
 
-// Capture the original displayed code, including its whitespace, before marking it.
+// Preserve displayed code and whitespace, except the release-managed ESM pin.
 const displayedCodeHashes = {
 	index: [
 		'8d2de977d65c54a14096f70b37a766dc33af42b7409a472b69372e2f9336c44b',
@@ -23,21 +22,38 @@ const displayedCodeHashes = {
 		'408bd15077ef906588b45e91e6e974f449f224ea70aef3739ade6dcbb501a7bc',
 		'21833bd70d249c6bfbdaab63f914d87bacf7c6bb6ab685971d6bf6b9647772fe',
 	],
-	esm: ['a044f25146c3c84a5f978f1ef03c15fa4c25eff38bf6387196265e91ac4d553f'],
+	esm: ['0f060c40832933c5d2197193dba7f8b7e330777d217d2973672bfbcf2b28d505'],
 	unpkg: ['5dde933b989758c99a5efdc25cb96be63cb7ccbd09a44ea41066348e65db1b92'],
 };
 
 it.each(Object.keys(displayedCodeHashes))(
-	'%s: preserves exact displayed code text',
+	'%s: preserves displayed code text except release-managed versions',
 	async (name) => {
-		const document = parseCode(await read(`demo/${name}.html`));
-		expect(
-			[...document.querySelectorAll('pre code')].map((code) =>
-				createHash('sha256').update(code.textContent).digest('hex'),
-			),
-		).toEqual(displayedCodeHashes[name]);
+		expect(codeTextHashes(await read(`demo/${name}.html`))).toEqual(
+			displayedCodeHashes[name],
+		);
 	},
 );
+
+it('keeps unrelated version text, URL parts, code, and whitespace significant', () => {
+	const source =
+		'<pre><code>https://esm.sh/@aarongustafson/form-required-checkboxes@1.2.3/form-required-checkboxes.js?target=es2022\nOther version 1.2.3\nconst count = 3;</code></pre>';
+	for (const changed of [
+		source.replace('Other version 1.2.3', 'Other version 9.8.7'),
+		source.replace('https://esm.sh/', 'https://unpkg.com/'),
+		source.replace('@aarongustafson/', '@another-author/'),
+		source.replace('/form-required-checkboxes.js?', '/index.js?'),
+		source.replace('target=es2022', 'target=es2023'),
+		source.replace('count = 3', 'count = 4'),
+		source.replace('\nOther', '\n Other'),
+	]) {
+		expect(codeTextHashes(changed)).not.toEqual(codeTextHashes(source));
+	}
+	const unpkg = source.replace('https://esm.sh/', 'https://unpkg.com/');
+	expect(codeTextHashes(unpkg.replace('@1.2.3/', '@9.8.7/'))).not.toEqual(
+		codeTextHashes(unpkg),
+	);
+});
 
 it.each(Object.keys(displayedCodeHashes))(
 	'%s: marks only component tags and import/registration snippets without nesting',
@@ -45,18 +61,7 @@ it.each(Object.keys(displayedCodeHashes))(
 		const document = parseCode(await read(`demo/${name}.html`));
 		for (const code of document.querySelectorAll('pre code')) {
 			const text = code.textContent;
-			const snippets = [
-				...text.matchAll(/<\/?form-required-checkboxes\b[^>]*>/g),
-				...text.matchAll(
-					/^import \{ (?:FormRequiredCheckboxesElement|defineFormRequiredCheckboxes) \} from\n[^\n]+;/gm,
-				),
-				...text.matchAll(
-					/^if \(!customElements\.get\('form-required-checkboxes'\)\) \{[\s\S]*?^\}/gm,
-				),
-				...text.matchAll(/^defineFormRequiredCheckboxes\(\);/gm),
-			]
-				.sort((a, b) => a.index - b.index)
-				.map((match) => match[0]);
+			const snippets = componentSnippets(text);
 			expect(snippets.length).toBeGreaterThanOrEqual(2);
 			expect(
 				[...code.querySelectorAll('mark')].map(
