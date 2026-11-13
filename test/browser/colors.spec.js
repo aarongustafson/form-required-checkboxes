@@ -445,6 +445,36 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await expect(page.locator('button[type=submit]').first()).toBeVisible();
 	});
 
+	test(`${name}: semantic component-code marks retain contrast in supported color modes`, async ({
+		page,
+		browserName,
+	}) => {
+		await demo(page, name);
+		const marks = page.locator('pre code mark');
+		await expect(marks).toHaveCount(name === 'index.html' ? 14 : 4);
+		const supportsAdjustment = await page.evaluate(() =>
+			CSS.supports('forced-color-adjust', 'auto'),
+		);
+		const modes = ['light', 'dark'].flatMap((colorScheme) => [
+			{ colorScheme, forcedColors: 'none' },
+			...(browserName === 'chromium'
+				? [{ colorScheme, forcedColors: 'active' }]
+				: []),
+		]);
+		for (const mode of modes) {
+			await page.emulateMedia(mode);
+			for (const mark of await marks.all()) {
+				expect(
+					await textContrast(mark),
+					JSON.stringify(mode),
+				).toBeGreaterThanOrEqual(4.5);
+				if (supportsAdjustment) {
+					await expect(mark).toHaveCSS('forced-color-adjust', 'auto');
+				}
+			}
+		}
+	});
+
 	test(`${name}: forced-color solid backings remain paired when gradients are suppressed`, async ({
 		page,
 	}) => {

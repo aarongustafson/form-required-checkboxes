@@ -31,13 +31,13 @@
 					supported. Calling its helper again is safe.
 				</p>
 				<div class="code-demo-pair">
-					<pre><code>import { defineFormRequiredCheckboxes } from
-  'https://unpkg.com/@aarongustafson/form-required-checkboxes@latest/define.js?module';
+					<pre><code><mark>import { defineFormRequiredCheckboxes } from
+  'https://unpkg.com/@aarongustafson/form-required-checkboxes@latest/define.js?module';</mark>
 
-defineFormRequiredCheckboxes();
+<mark>defineFormRequiredCheckboxes();</mark>
 
 &lt;form&gt;
-  &lt;form-required-checkboxes required="2-3"&gt;
+  <mark>&lt;form-required-checkboxes required="2-3"&gt;</mark>
     &lt;fieldset&gt;
       &lt;legend&gt;Select 2 or 3 toppings&lt;/legend&gt;
       &lt;label&gt;&lt;input type="checkbox" name="toppings" value="pepperoni"&gt; Pepperoni&lt;/label&gt;
@@ -45,7 +45,7 @@ defineFormRequiredCheckboxes();
       &lt;label&gt;&lt;input type="checkbox" name="toppings" value="olive"&gt; Olive&lt;/label&gt;
       &lt;label&gt;&lt;input type="checkbox" name="toppings" value="onion"&gt; Onion&lt;/label&gt;
     &lt;/fieldset&gt;
-  &lt;/form-required-checkboxes&gt;
+  <mark>&lt;/form-required-checkboxes&gt;</mark>
   &lt;button type="submit"&gt;Submit&lt;/button&gt;
   &lt;button type="reset"&gt;Reset&lt;/button&gt;
 &lt;/form&gt;</code></pre>
