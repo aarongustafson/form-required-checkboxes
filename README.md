@@ -317,7 +317,9 @@ The demos pair page text with `Canvas`, button and inline-code text with
 inside a group inherits its foreground; the Canvas-backed footer uses an 80%
 foreground mix, with full-strength text in forced colors and increased contrast.
 Button hover adds a small foreground wash and an underline without fading the
-label. Native checkbox painting and keyboard focus remain browser-controlled.
+label. Forced colors use solid `Field` and `ButtonFace` backgrounds for their
+paired text, so readability doesn’t depend on gradients that browsers may suppress.
+Native checkbox painting and keyboard focus remain browser-controlled.
 Keep foreground/background pairs together when overriding these styles, and
 test text, boundaries, and focus on every adjacent surface.
 

@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { request as httpRequest } from 'node:http';
 import { test as base, expect } from '@playwright/test';
 
 const read = (path) =>
@@ -444,6 +445,42 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await expect(page.locator('button[type=submit]').first()).toBeVisible();
 	});
 
+	test(`${name}: forced-color solid backings remain paired when gradients are suppressed`, async ({
+		page,
+	}) => {
+		await demo(page, name);
+		const css = substitute(await read('demo/styles.css'), [
+			'#000000',
+			'#ffffff',
+			'#c0c0c0',
+			'#000000',
+			'#ffffff',
+			'#000000',
+		]).replaceAll('(forced-colors: active)', 'all');
+		await page.addStyleTag({ content: css });
+		// Model gradient suppression with a recorded palette whose surfaces differ.
+		// This is not a test of native OS text backplates or control painting.
+		await page.addStyleTag({
+			content:
+				'pre, input[type=email], button { background-image: none !important; }',
+		});
+		for (const selector of ['pre', 'input[type=email]', 'button']) {
+			for (const element of await page.locator(selector).all()) {
+				expect(
+					await textContrast(element),
+					selector,
+				).toBeGreaterThanOrEqual(4.5);
+				if (selector === 'button') {
+					await element.hover();
+					expect(
+						await textContrast(element),
+						`${selector}:hover`,
+					).toBeGreaterThanOrEqual(4.5);
+				}
+			}
+		}
+	});
+
 	for (const failure of ['no JavaScript', 'module failure']) {
 		test(`${name}: ${failure} retains authored group instructions and native controls`, async ({
 			browser,
@@ -453,12 +490,23 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 			});
 			await routeFixture(context);
 			const page = await context.newPage();
+			let helperStatus;
+			page.on('response', (response) => {
+				if (response.url().endsWith('/demo/demo.js')) {
+					helperStatus = response.status();
+				}
+			});
 			if (failure === 'module failure') {
-				await page.route('**/*.js*', (route) =>
-					route.request().url().endsWith('/demo/demo.js')
-						? route.continue()
-						: route.abort(),
-				);
+				await page.route('**/*.js*', (route) => {
+					const { pathname } = new URL(route.request().url());
+					return [
+						'/define.js',
+						'/form-required-checkboxes.js',
+						'/translations.js',
+					].some((module) => pathname.endsWith(module))
+						? route.abort()
+						: route.fallback();
+				});
 			}
 			await page.goto(`http://checkboxes.test/demo/${name}`);
 			await expect(
@@ -478,13 +526,75 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 				page.locator('input[type=checkbox]').first(),
 			).not.toBeChecked();
 			if (failure === 'module failure') {
+				await expect.poll(() => helperStatus).toBe(200);
+				expect(
+					await page.evaluate(() =>
+						customElements.get('form-required-checkboxes'),
+					),
+				).toBeUndefined();
+				const checkbox = page.locator('input[type=checkbox]').first();
+				await checkbox.check();
+				await page.evaluate(() => {
+					window.fallbackSubmissions = [];
+					document.addEventListener('submit', (event) => {
+						window.fallbackSubmissions.push({
+							prevented: event.defaultPrevented,
+							values: [...new FormData(event.target)],
+						});
+					});
+				});
+				let navigations = 0;
+				page.on('framenavigated', (frame) => {
+					if (frame === page.mainFrame()) navigations++;
+				});
 				await page.locator('button[type=submit]').first().click();
+				expect(
+					await page.evaluate(() => window.fallbackSubmissions),
+				).toEqual([
+					{
+						prevented: true,
+						values: [
+							[
+								await checkbox.getAttribute('name'),
+								await checkbox.getAttribute('value'),
+							],
+						],
+					},
+				]);
+				expect(navigations).toBe(0);
+				await expect(page).toHaveURL(
+					`http://checkboxes.test/demo/${name}`,
+				);
+				await expect(checkbox).toBeChecked();
 				await expect(page.locator('.form-result').first()).toBeHidden();
 			}
 			await context.close();
 		});
 	}
 }
+
+test('malformed fixture request targets return 400 without breaking later requests', async ({
+	request,
+}) => {
+	for (const path of ['//[', '/%ZZ']) {
+		const status = await new Promise((resolve, reject) => {
+			const outgoing = httpRequest(
+				{ hostname: '127.0.0.1', port: 4190, path },
+				(response) => {
+					response.resume();
+					response.on('end', () => resolve(response.statusCode));
+				},
+			);
+			outgoing.on('error', reject);
+			outgoing.end();
+		});
+		const healthy = await request.get(
+			'http://127.0.0.1:4190/demo/index.html',
+		);
+		expect(healthy.status()).toBe(200);
+		expect(status, path).toBe(400);
+	}
+});
 
 test('localized/custom notices, native earlier-field priority, and unchanged option values', async ({
 	page,
@@ -539,6 +649,12 @@ test('forced-color emulation retains native focus and non-color feedback', async
 	);
 	await page.emulateMedia({ forcedColors: 'active' });
 	await demo(page);
+	for (const selector of ['pre', 'input[type=email]', 'button']) {
+		await expect(page.locator(selector).first()).toHaveCSS(
+			'background-image',
+			'none',
+		);
+	}
 	for (const checkbox of (await page.locator('#form1 input').all()).slice(
 		0,
 		3,

@@ -55,7 +55,13 @@ createServer(async (request, response) => {
 				.on('error', () => response.destroy())
 				.pipe(response);
 	} catch (error) {
-		response.writeHead(error instanceof URIError ? 400 : 404).end();
+		response
+			.writeHead(
+				error instanceof URIError || error.code === 'ERR_INVALID_URL'
+					? 400
+					: 404,
+			)
+			.end();
 	}
 }).listen(port, '127.0.0.1', () => {
 	console.log(`No-cache preview: http://127.0.0.1:${port}/demo/`);

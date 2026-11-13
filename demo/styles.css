@@ -392,3 +392,24 @@ form-required-checkboxes small {
 		background-image: linear-gradient(ButtonFace, ButtonFace);
 	}
 }
+
+@media (forced-colors: active) {
+	pre,
+	input:not(
+		[type='checkbox'],
+		[type='radio'],
+		[type='submit'],
+		[type='reset']
+	),
+	select,
+	textarea {
+		background: Field;
+	}
+
+	button[type='submit'],
+	button[type='reset'],
+	button[type='submit']:hover,
+	button[type='reset']:hover {
+		background: ButtonFace;
+	}
+}
