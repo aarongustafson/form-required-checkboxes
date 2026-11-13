@@ -1,6 +1,10 @@
 # Required Checkboxes Web Component
 
-[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-required-checkboxes.svg)](https://www.npmjs.com/package/@aarongustafson/form-required-checkboxes) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-required-checkboxes/ci.yml?branch=main)](https://github.com/aarongustafson/form-required-checkboxes/actions)
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-required-checkboxes.svg)](https://www.npmjs.com/package/@aarongustafson/form-required-checkboxes)
+[![CI status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-required-checkboxes/ci.yml?branch=main&label=CI)](https://github.com/aarongustafson/form-required-checkboxes/actions/workflows/ci.yml)
+[![Minified + gzipped size](https://img.shields.io/bundlejs/size/@aarongustafson/form-required-checkboxes?format=minzip&label=min%2Bgzip)](https://bundlejs.com/?q=@aarongustafson/form-required-checkboxes)
+[![License](https://img.shields.io/npm/l/@aarongustafson/form-required-checkboxes)](https://github.com/aarongustafson/form-required-checkboxes/blob/main/LICENSE)
+[![Type definitions](https://img.shields.io/npm/types/@aarongustafson/form-required-checkboxes)](https://github.com/aarongustafson/form-required-checkboxes/blob/main/form-required-checkboxes.d.ts)
 
 Currently, we can only make checkboxes required or not, individually. In some cases you need to be able to set a specific number of checkboxes that need to be checked. The `form-required-checkboxes` web component enables that.
 
