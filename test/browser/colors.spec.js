@@ -98,6 +98,7 @@ async function measurements(locator) {
 			return (values[0] + 0.05) / (values[1] + 0.05);
 		};
 		const style = getComputedStyle(element);
+		paint(`rgb(${background.slice(0, 3).join(',')})`);
 		const border = paint(style.borderTopColor);
 		const paintsBorder =
 			parseFloat(style.borderTopWidth) > 0 &&
@@ -112,6 +113,18 @@ async function measurements(locator) {
 async function textContrast(locator) {
 	return (await measurements(locator)).text;
 }
+
+test('translucent text and borders each composite once over their surface', async ({
+	page,
+}) => {
+	await page.setContent(
+		'<div style="background:white;color:rgb(0 0 0 / 50%);border:1px solid rgb(0 0 0 / 50%)">Calibration</div>',
+	);
+	const result = await measurements(page.locator('div'));
+	expect(result.text).toBeGreaterThan(3.9);
+	expect(result.text).toBeLessThan(4.1);
+	expect(result.boundary).toBeCloseTo(result.text, 4);
+});
 
 test('required feedback remains readable on its Canvas surface', async ({
 	page,
