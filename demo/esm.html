@@ -5,19 +5,41 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>form-required-checkboxes via esm.sh</title>
 		<link rel="stylesheet" href="./styles.css" />
+		<link rel="stylesheet" href="./demo-shell.css" />
 	</head>
-	<body>
+	<body data-syntax-theme="github">
+		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
-			<h1>&lt;form-required-checkboxes&gt; via esm.sh</h1>
-			<p>
+			<p class="eyebrow">Web component / esm</p>
+			<h1>&lt;form-required-checkboxes&gt;</h1>
+			<p class="lede">
 				Import the class and register it manually.
 				<a
 					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
 					>README</a
 				>
 			</p>
+			<nav aria-label="Component resources">
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
+					>Read the README</a
+				>
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes"
+					>View on GitHub</a
+				>
+				<a href="./index.html">All examples</a>
+				<a href="./unpkg.html">unpkg example</a>
+			</nav>
 		</header>
-		<main>
+		<main id="main" tabindex="-1">
+			<p
+				id="microlighter-status"
+				class="enhancement-status"
+				role="status"
+				hidden
+			></p>
+
 			<p class="note">
 				The checkboxes work before enhancement. Selection-count
 				validation needs JavaScript; if the module doesn’t load, follow
@@ -31,7 +53,16 @@
 					<code>customElements.define()</code> once before using it.
 				</p>
 				<div class="code-demo-pair">
-					<pre><code><mark>import { FormRequiredCheckboxesElement } from
+					<micro-lighter
+						class="code-panel"
+						language="javascript"
+						controls="copy"
+						data-label="JavaScript"
+					>
+						<pre
+							aria-label="Manual registration code 1"
+							tabindex="0"
+						><code><mark>import { FormRequiredCheckboxesElement } from
   'https://esm.sh/@aarongustafson/form-required-checkboxes@3.2.7/form-required-checkboxes.js?bundle&amp;target=es2022';</mark>
 
 <mark>if (!customElements.get('form-required-checkboxes')) {
@@ -54,6 +85,7 @@
   &lt;button type="submit"&gt;Submit&lt;/button&gt;
   &lt;button type="reset"&gt;Reset&lt;/button&gt;
 &lt;/form&gt;</code></pre>
+					</micro-lighter>
 					<div class="demo">
 						<form>
 							<form-required-checkboxes required="2-3">
@@ -126,5 +158,6 @@
 			}
 		</script>
 		<script src="./demo.js" defer></script>
+		<script type="module" src="./code-examples.js"></script>
 	</body>
 </html>

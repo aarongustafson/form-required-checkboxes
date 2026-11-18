@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Required Checkboxes Web Component Demo</title>
 		<link rel="stylesheet" href="./styles.css" />
+		<link rel="stylesheet" href="./demo-shell.css" />
 		<style>
 			/* Demo-specific styles */
 			fieldset div:has([type='checkbox']) {
@@ -22,10 +23,12 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body data-syntax-theme="github">
+		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
+			<p class="eyebrow">Web component / Examples</p>
 			<h1>&lt;form-required-checkboxes&gt;</h1>
-			<p>
+			<p class="lede">
 				A web component that enables requirement rules for checkbox
 				groups. See the
 				<a
@@ -34,9 +37,28 @@
 				>
 				for installation and API documentation.
 			</p>
+			<nav aria-label="Component resources">
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
+					>Read the README</a
+				>
+				<a
+					href="https://github.com/aarongustafson/form-required-checkboxes"
+					>View on GitHub</a
+				>
+				<a href="./esm.html">esm.sh example</a>
+				<a href="./unpkg.html">unpkg example</a>
+			</nav>
 		</header>
 
-		<main>
+		<main id="main" tabindex="-1">
+			<p
+				id="microlighter-status"
+				class="enhancement-status"
+				role="status"
+				hidden
+			></p>
+
 			<p class="note">
 				The checkboxes work before enhancement. Selection-count
 				validation needs JavaScript; if the module doesn’t load, follow
@@ -56,7 +78,16 @@
 						to see the validation in action.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-required-checkboxes required="3"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Require Exactly 3 Selections code 1"
+								tabindex="0"
+							><code><mark>&lt;form-required-checkboxes required="3"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Choose your top 3 skills&lt;/legend&gt;
     &lt;div&gt;
@@ -88,6 +119,7 @@
     &lt;/div&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form1">
 								<form-required-checkboxes required="3">
@@ -165,7 +197,16 @@
 						selected.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-required-checkboxes required="2-4"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Require 2-4 Selections code 2"
+								tabindex="0"
+							><code><mark>&lt;form-required-checkboxes required="2-4"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Select 2-4 interests&lt;/legend&gt;
     &lt;div&gt;
@@ -202,6 +243,7 @@
     &lt;/div&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form2">
 								<form-required-checkboxes required="2-4">
@@ -287,7 +329,16 @@
 						3 are selected.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-required-checkboxes required="0-3"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Up to 3 Selections (Optional) code 3"
+								tabindex="0"
+							><code><mark>&lt;form-required-checkboxes required="0-3"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Choose up to 3 toppings&lt;/legend&gt;
     &lt;div&gt;
@@ -319,6 +370,7 @@
     &lt;/div&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form3">
 								<form-required-checkboxes required="0-3">
@@ -396,7 +448,16 @@
 						messaging.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-required-checkboxes&#32;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Custom Notice and Error Messages code 4"
+								tabindex="0"
+							><code><mark>&lt;form-required-checkboxes&#32;
   required="3" 
   notice="Pick exactly 3 colors you like" 
   error="You must select exactly 3 colors"&gt;</mark>
@@ -431,6 +492,7 @@
     &lt;/div&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form4">
 								<form-required-checkboxes
@@ -513,7 +575,16 @@
 						Spanish.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-required-checkboxes&#32;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Spanish (Español) code 5"
+								tabindex="0"
+							><code><mark>&lt;form-required-checkboxes&#32;
   required="2-4" 
   lang="es"&gt;</mark>
   &lt;fieldset&gt;
@@ -547,6 +618,7 @@
     &lt;/div&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form5">
 								<form-required-checkboxes
@@ -624,7 +696,16 @@
 						French.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-required-checkboxes&#32;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="French (Français) code 6"
+								tabindex="0"
+							><code><mark>&lt;form-required-checkboxes&#32;
   required="3" 
   lang="fr"&gt;</mark>
   &lt;fieldset&gt;
@@ -653,6 +734,7 @@
     &lt;/div&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form6">
 								<form-required-checkboxes
@@ -729,7 +811,16 @@
 						order.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Form with Multiple Fields code 7"
+								tabindex="0"
+							><code>&lt;form&gt;
   &lt;label&gt;
     Email address
     &lt;input type="email" 
@@ -772,6 +863,7 @@
 
   &lt;button type="submit"&gt;Submit&lt;/button&gt;
 &lt;/form&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="form7">
 								<label>
@@ -902,5 +994,6 @@
 
 		<script src="../define.js" type="module"></script>
 		<script src="./demo.js" defer></script>
+		<script type="module" src="./code-examples.js"></script>
 	</body>
 </html>
