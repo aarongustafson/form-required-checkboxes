@@ -8,6 +8,10 @@ const read = (path) =>
 // Firefox/WebKit reserve port 4190 (Sieve). Relay a test-only origin through
 // Playwright's HTTP client to the exclusive fixture, without another server.
 async function routeFixture(context) {
+	await context.route(
+		'https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/**',
+		(route) => route.abort(),
+	);
 	await context.route('http://checkboxes.test/**', async (route) => {
 		const url = new URL(route.request().url());
 		const response = await route.fetch({
@@ -255,7 +259,13 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 	}) => {
 		test.setTimeout(120000);
 		await demo(page, name);
-		const css = await read('demo/styles.css');
+		const css = [
+			await read('demo/styles.css'),
+			await read('demo/demo-shell.css'),
+		].join('\n');
+		await page
+			.locator('link[rel="stylesheet"]')
+			.evaluateAll((links) => links.forEach((link) => link.remove()));
 		const style = await page.addStyleTag({ content: css });
 		const form = page.locator('form').first();
 		const buttons = form.locator('button');
@@ -339,9 +349,10 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 						selector,
 					).toBeGreaterThanOrEqual(4.5);
 			}
-			const link = page.locator('header a');
-			await link.dispatchEvent('mousedown');
-			expect(await textContrast(link)).toBeGreaterThanOrEqual(4.5);
+			for (const link of await page.locator('header a').all()) {
+				await link.dispatchEvent('mousedown');
+				expect(await textContrast(link)).toBeGreaterThanOrEqual(4.5);
+			}
 		});
 		test(`${name}: ${colorScheme} native ButtonText/ButtonFace pairs`, async ({
 			page,
@@ -388,7 +399,8 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 				: 'Tab',
 		);
 		await expect(boxes.nth(1)).toBeFocused();
-		await expect(boxes.nth(1)).toHaveCSS('outline-style', 'auto');
+		await expect(boxes.nth(1)).toHaveCSS('outline-style', 'solid');
+		await expect(boxes.nth(1)).toHaveCSS('outline-width', '3px');
 		await form.locator('button[type=submit]').click();
 		await expect(first).toBeFocused();
 		expect(
@@ -427,7 +439,9 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await page.setViewportSize({ width: 1200, height: 900 });
 		await demo(page, name);
 		for (const pair of await page.locator('.code-demo-pair').all()) {
-			const code = await pair.locator('pre').boundingBox();
+			const code = await pair
+				.locator(':scope > micro-lighter')
+				.boundingBox();
 			const live = await pair.locator('.demo').boundingBox();
 			expect(code.x).toBeLessThan(live.x);
 			expect(Math.abs(code.y - live.y)).toBeLessThan(2);
@@ -435,7 +449,9 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await page.setViewportSize({ width: 320, height: 700 });
 		await page.addStyleTag({ content: 'html { font-size: 200%; }' });
 		for (const pair of await page.locator('.code-demo-pair').all()) {
-			const code = await pair.locator('pre').boundingBox();
+			const code = await pair
+				.locator(':scope > micro-lighter')
+				.boundingBox();
 			const live = await pair.locator('.demo').boundingBox();
 			expect(code.y + code.height).toBeLessThanOrEqual(live.y);
 		}
@@ -696,7 +712,11 @@ test('forced-color emulation retains native focus and non-color feedback', async
 	await page.keyboard.press('Tab');
 	await expect(page.locator('#form1 input').nth(1)).toHaveCSS(
 		'outline-style',
-		'auto',
+		'solid',
+	);
+	await expect(page.locator('#form1 input').nth(1)).toHaveCSS(
+		'outline-width',
+		'3px',
 	);
 	for (const selector of [
 		'.note',
