@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { request as httpRequest } from 'node:http';
 import { test as base, expect } from '@playwright/test';
+import { expectNativeFocus, readDemoStyles } from './demo-fixture.js';
 
 const read = (path) =>
 	readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
@@ -259,10 +260,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 	}) => {
 		test.setTimeout(120000);
 		await demo(page, name);
-		const css = [
-			await read('demo/styles.css'),
-			await read('demo/demo-shell.css'),
-		].join('\n');
+		const css = await readDemoStyles(name);
 		await page
 			.locator('link[rel="stylesheet"]')
 			.evaluateAll((links) => links.forEach((link) => link.remove()));
@@ -399,8 +397,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 				: 'Tab',
 		);
 		await expect(boxes.nth(1)).toBeFocused();
-		await expect(boxes.nth(1)).toHaveCSS('outline-style', 'solid');
-		await expect(boxes.nth(1)).toHaveCSS('outline-width', '3px');
+		await expectNativeFocus(boxes.nth(1));
 		await form.locator('button[type=submit]').click();
 		await expect(first).toBeFocused();
 		expect(
@@ -495,7 +492,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		page,
 	}) => {
 		await demo(page, name);
-		const css = substitute(await read('demo/styles.css'), [
+		const css = substitute(await readDemoStyles(name), [
 			'#000000',
 			'#ffffff',
 			'#c0c0c0',
@@ -710,14 +707,7 @@ test('forced-color emulation retains native focus and non-color feedback', async
 	await expect(page.locator('#form1 .form-result')).toBeVisible();
 	await page.locator('#form1 input').first().focus();
 	await page.keyboard.press('Tab');
-	await expect(page.locator('#form1 input').nth(1)).toHaveCSS(
-		'outline-style',
-		'solid',
-	);
-	await expect(page.locator('#form1 input').nth(1)).toHaveCSS(
-		'outline-width',
-		'3px',
-	);
+	await expectNativeFocus(page.locator('#form1 input').nth(1));
 	for (const selector of [
 		'.note',
 		'.api-reference',

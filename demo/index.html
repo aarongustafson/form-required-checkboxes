@@ -4,26 +4,14 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Required Checkboxes Web Component Demo</title>
-		<link rel="stylesheet" href="./styles.css" />
 		<link rel="stylesheet" href="./demo-shell.css" />
-		<style>
-			/* Demo-specific styles */
-			fieldset div:has([type='checkbox']) {
-				display: flex;
-				list-style: none;
-				flex-wrap: wrap;
-				gap: 0.1rem;
-				margin-inline: 0;
-				padding-inline: 0;
-			}
-			fieldset label:has([type='checkbox']) {
-				flex-basis: 10rem;
-				margin-block: 0;
-				font-weight: normal;
-			}
-		</style>
+		<link rel="stylesheet" href="./styles.css" />
 	</head>
-	<body data-syntax-theme="github">
+	<body
+		data-demo-page="full"
+		data-demo-variant="groups"
+		data-syntax-theme="github"
+	>
 		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
 			<p class="eyebrow">Web component / Examples</p>
@@ -56,6 +44,9 @@
 				id="microlighter-status"
 				class="enhancement-status"
 				role="status"
+				data-loading-message="Loading optional code highlighting and Copy controls."
+				data-failure-message="MicroLighter could not load. Code remains readable and selectable; the component loads independently."
+				data-theme-failure-message="Code highlighting and Copy controls are available, but the syntax theme could not load. The component loads independently."
 				hidden
 			></p>
 
@@ -120,7 +111,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form1">
 								<form-required-checkboxes required="3">
 									<fieldset>
@@ -244,7 +235,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form2">
 								<form-required-checkboxes required="2-4">
 									<fieldset>
@@ -371,7 +362,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form3">
 								<form-required-checkboxes required="0-3">
 									<fieldset>
@@ -493,7 +484,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form4">
 								<form-required-checkboxes
 									required="3"
@@ -619,7 +610,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form5">
 								<form-required-checkboxes
 									required="2-4"
@@ -735,7 +726,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form6">
 								<form-required-checkboxes
 									required="3"
@@ -864,7 +855,7 @@
   &lt;button type="submit"&gt;Submit&lt;/button&gt;
 &lt;/form&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="form7">
 								<label>
 									Email address

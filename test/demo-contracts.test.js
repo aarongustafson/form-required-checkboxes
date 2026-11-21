@@ -6,6 +6,12 @@ import { it, expect } from 'vitest';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(resolve(root, path), 'utf8');
 
+it('trims block-edge margins inside demo sections', async () => {
+	expect(await read('demo/demo-shell.css')).toMatch(
+		/\.demo-section(?:,\s*\.api-reference)?\s*\{[^}]*\bmargin-trim:\s*block;/,
+	);
+});
+
 it('keeps behavior-only runtime free of palette/focus overrides', async () => {
 	const source = await read('form-required-checkboxes.js');
 	expect(source).not.toMatch(
