@@ -49,7 +49,7 @@
 				the limits in the legend. Applications must also validate
 				selections on the server.
 			</p>
-			<section class="demo-section">
+			<section class="demo-section" id="guarded-registration">
 				<h2>Guarded registration</h2>
 				<p>
 					Importing <code>define.js</code> registers the element when
@@ -58,17 +58,19 @@
 				<div class="code-demo-pair">
 					<micro-lighter
 						class="code-panel"
-						language="javascript"
+						language="html"
 						controls="copy"
-						data-label="JavaScript"
+						data-label="HTML"
 					>
 						<pre
 							aria-label="Guarded registration code 1"
 							tabindex="0"
-						><code><mark>import { defineFormRequiredCheckboxes } from
+						><code>&lt;script type="module"&gt;
+<mark>import { defineFormRequiredCheckboxes } from
   'https://unpkg.com/@aarongustafson/form-required-checkboxes@latest/define.js?module';</mark>
 
 <mark>defineFormRequiredCheckboxes();</mark>
+&lt;/script&gt;
 
 &lt;form&gt;
   <mark>&lt;form-required-checkboxes required="2-3"&gt;</mark>
@@ -82,6 +84,9 @@
   <mark>&lt;/form-required-checkboxes&gt;</mark>
   &lt;button type="submit"&gt;Submit&lt;/button&gt;
   &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;p class="form-result" role="status" hidden&gt;
+    Valid selections. This demo hasn’t sent your data.
+  &lt;/p&gt;
 &lt;/form&gt;</code></pre>
 					</micro-lighter>
 					<div class="demo" data-demo-label="Live example">

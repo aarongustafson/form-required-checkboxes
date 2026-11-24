@@ -464,7 +464,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 	}) => {
 		await demo(page, name);
 		const marks = page.locator('pre code mark');
-		await expect(marks).toHaveCount(name === 'index.html' ? 14 : 4);
+		await expect(marks).toHaveCount(name === 'index.html' ? 15 : 4);
 		const supportsAdjustment = await page.evaluate(() =>
 			CSS.supports('forced-color-adjust', 'auto'),
 		);
@@ -682,6 +682,166 @@ test('localized/custom notices, native earlier-field priority, and unchanged opt
 	}
 });
 
+test('authored exact, range, and optional-maximum examples enforce both limits', async ({
+	page,
+}) => {
+	await demo(page);
+	for (const [id, minimum, maximum] of [
+		['form1', 3, 3],
+		['form2', 2, 4],
+		['form3', 0, 3],
+	]) {
+		const form = page.locator(`#${id}`);
+		const boxes = form.locator('input[type=checkbox]');
+		const first = boxes.first();
+		const submit = form.locator('button[type=submit]');
+		const result = form.locator('.form-result');
+		await submit.click();
+		if (minimum > 0) {
+			await expect(first).toBeFocused();
+			expect(
+				await first.evaluate((input) => input.validity.customError),
+			).toBe(true);
+			await expect(result).toBeHidden();
+			await page.keyboard.press('Escape');
+		} else {
+			await expect(result).toBeVisible();
+		}
+		for (const box of (await boxes.all()).slice(0, minimum)) {
+			await box.check();
+		}
+		await submit.click();
+		await expect(result).toBeVisible();
+		for (const box of (await boxes.all()).slice(minimum, maximum)) {
+			await box.check();
+		}
+		await submit.click();
+		await expect(result).toBeVisible();
+		await boxes.nth(maximum).check();
+		await expect(result).toBeHidden();
+		await submit.click();
+		await expect(first).toBeFocused();
+		expect(
+			await first.evaluate((input) => input.validity.customError),
+		).toBe(true);
+		await page.keyboard.press('Escape');
+		await form.locator('button[type=reset]').click();
+		await expect(form.locator('input:checked')).toHaveCount(0);
+		// Native reset restores values, not an existing custom validity error.
+		expect(
+			await first.evaluate((input) => input.validity.customError),
+		).toBe(true);
+		await first.focus();
+		await page.keyboard.press('Space');
+		expect(
+			await first.evaluate((input) => input.validity.customError),
+		).toBe(false);
+	}
+});
+
+test('embedded translations include controls, errors, results, and language semantics', async ({
+	page,
+}) => {
+	await demo(page);
+	for (const [id, language, error, submitLabel, resetLabel] of [
+		[
+			'form5',
+			'es',
+			'Debe elegir entre 2 y 4 opciones',
+			'Enviar',
+			'Restablecer',
+		],
+		[
+			'form6',
+			'fr',
+			'Vous devez choisir exactement 3 options',
+			'Soumettre',
+			'Réinitialiser',
+		],
+	]) {
+		const form = page.locator(`#${id}`);
+		await expect(form).toHaveAttribute('lang', language);
+		await form
+			.getByRole('button', { name: submitLabel, exact: true })
+			.click();
+		expect(
+			await form
+				.locator('input')
+				.first()
+				.evaluate((input) => input.validationMessage),
+		).toBe(error);
+		await page.keyboard.press('Escape');
+		for (const box of (await form.locator('input').all()).slice(0, 3)) {
+			await box.check();
+		}
+		await form
+			.getByRole('button', { name: submitLabel, exact: true })
+			.click();
+		await expect(form.getByRole('status')).toBeVisible();
+		await expect(form.getByRole('status')).toHaveAttribute(
+			'lang',
+			language,
+		);
+		await form
+			.getByRole('button', { name: resetLabel, exact: true })
+			.click();
+		await expect(form.getByRole('status')).toBeHidden();
+	}
+});
+
+for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
+	test(`${name}: individual fragments reach examples and displayed configuration matches native controls`, async ({
+		page,
+	}) => {
+		await demo(page, name);
+		// Optional enhancement is deliberately unavailable: inspect authored code.
+		const examples = page.locator('.demo-section');
+		for (const example of await examples.all()) {
+			const id = await example.getAttribute('id');
+			expect(id).toBeTruthy();
+			await page.goto(`/demo/${name}#${id}`);
+			expect(await page.evaluate(() => location.hash)).toBe(`#${id}`);
+			const bounds = await example.boundingBox();
+			expect(bounds.y).toBeLessThan(
+				await page.evaluate(() => innerHeight),
+			);
+			const code = await example.locator('pre code').textContent();
+			const form = example.locator('.demo form');
+			const group = form.locator('form-required-checkboxes');
+			for (const attribute of ['required', 'notice', 'error', 'lang']) {
+				const value = await group.getAttribute(attribute);
+				if (value !== null) {
+					expect(code).toContain(`${attribute}="${value}"`);
+				}
+			}
+			for (const input of await form.locator('input').all()) {
+				expect(code).toContain(
+					`name="${await input.getAttribute('name')}"`,
+				);
+				const value = await input.getAttribute('value');
+				if (value !== null) expect(code).toContain(`value="${value}"`);
+			}
+			for (const label of await form
+				.locator('label, button, .form-result')
+				.all()) {
+				const text = (await label.textContent())
+					.replace(/\s+/g, ' ')
+					.trim();
+				expect(code.replace(/\s+/g, ' ')).toContain(text);
+			}
+		}
+		if (name !== 'index.html') {
+			const panel = examples.locator('micro-lighter');
+			await expect(panel).toHaveAttribute('language', 'html');
+			const code = await panel.locator('pre code').textContent();
+			expect(code).toContain('<script type="module">');
+			expect(code.indexOf('</script>')).toBeLessThan(
+				code.indexOf('<form>'),
+			);
+		}
+	});
+}
+
 test('forced-color emulation retains native focus and non-color feedback', async ({
 	page,
 	browserName,
@@ -710,7 +870,7 @@ test('forced-color emulation retains native focus and non-color feedback', async
 	await expectNativeFocus(page.locator('#form1 input').nth(1));
 	for (const selector of [
 		'.note',
-		'.api-reference',
+		'#exact-count > p',
 		'form-required-checkboxes small',
 		'.form-result',
 		'button',
