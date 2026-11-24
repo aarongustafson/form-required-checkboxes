@@ -64,3 +64,21 @@ it('preserves the published file list, declarations and registration exports', a
 		declaration.attributes.map((attribute) => attribute.name).sort(),
 	).toEqual(['error', 'lang', 'notice', 'required']);
 });
+
+it('gives each authored example its own unique fragment destination', async () => {
+	for (const name of ['index', 'esm', 'unpkg']) {
+		const template = document.createElement('template');
+		template.innerHTML = await read(`demo/${name}.html`);
+		const ids = [...template.content.querySelectorAll('[id]')].map(
+			(element) => element.id,
+		);
+		expect(new Set(ids).size, name).toBe(ids.length);
+		for (const pair of template.content.querySelectorAll(
+			'.code-demo-pair',
+		)) {
+			const example = pair.closest('.demo-section');
+			expect(example?.id, `${name}: individual example`).toBeTruthy();
+			expect(example.querySelector('h2, h3'), name).not.toBeNull();
+		}
+	}
+});

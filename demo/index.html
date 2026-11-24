@@ -17,8 +17,8 @@
 			<p class="eyebrow">Web component / Examples</p>
 			<h1>&lt;form-required-checkboxes&gt;</h1>
 			<p class="lede">
-				A web component that enables requirement rules for checkbox
-				groups. See the
+				Require an exact count, a range, or an optional maximum of
+				native checkbox selections. See the
 				<a
 					href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
 					>README</a
@@ -57,17 +57,31 @@
 				selections on the server.
 			</p>
 			<!-- Exact Number Example -->
-			<section>
-				<h2>Exact Number Required</h2>
-				<p>Require exactly N checkboxes to be selected.</p>
+			<section id="exact-count">
+				<h2>Require an exact count</h2>
+				<p>
+					Set <code>required="3"</code> on the component to require
+					exactly three selections. Wrap labeled, same-name checkboxes
+					in a <code>fieldset</code> with a <code>legend</code>.
+				</p>
+				<p>
+					Submit with fewer or more than three selections to see the
+					browser’s validation message. The browser can focus the
+					first checkbox; changing a checkbox clears the custom error.
+					Reset restores selections, but does not clear an existing
+					custom error. Change a checkbox before submitting again
+					after an invalid attempt.
+				</p>
+				<p>
+					Native <code>required</code> on an individual checkbox
+					requires that checkbox, not a count across the group. Other
+					invalid fields can stop native submission before group
+					validation runs. See
+					<a href="#native-validation">the required-email example</a>.
+				</p>
 
-				<div class="demo-section">
-					<h3>Require Exactly 3 Selections</h3>
-					<p>
-						This example requires exactly 3 checkboxes to be
-						selected. Try submitting with fewer or more selections
-						to see the validation in action.
-					</p>
+				<div class="demo-section" id="choose-three-skills">
+					<h3>Choose three skills</h3>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -78,7 +92,10 @@
 							<pre
 								aria-label="Require Exactly 3 Selections code 1"
 								tabindex="0"
-							><code><mark>&lt;form-required-checkboxes required="3"&gt;</mark>
+							><code><mark>&lt;script type="module" src="../define.js"&gt;&lt;/script&gt;</mark>
+
+&lt;form id="form1"&gt;
+<mark>&lt;form-required-checkboxes required="3"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Choose your top 3 skills&lt;/legend&gt;
     &lt;div&gt;
@@ -109,7 +126,13 @@
       &lt;/label&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;p class="form-result" role="status" hidden&gt;
+    Valid selections. This demo hasn’t sent your data.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<form id="form1">
@@ -172,20 +195,127 @@
 						</div>
 					</div>
 				</div>
+				<!-- Native field validation -->
+				<div class="demo-section" id="native-validation">
+					<h3>Include a required native field</h3>
+					<p>
+						Submit with an empty email field: the browser reports
+						that field’s native error before the group’s submit
+						handler runs. Enter a valid email address and submit
+						again to check the selection count.
+					</p>
+					<div class="code-demo-pair">
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Required native field code"
+								tabindex="0"
+							><code>&lt;form id="form7"&gt;
+  &lt;label&gt;
+    Email address
+    &lt;input type="email" required name="email"&gt;
+  &lt;/label&gt;
+  <mark>&lt;form-required-checkboxes required="3"&gt;</mark>
+    &lt;fieldset&gt;
+      &lt;legend&gt;Choose 3 preferences&lt;/legend&gt;
+      &lt;div&gt;
+        &lt;label&gt;&lt;input type="checkbox" name="prefs[]" value="1"&gt; Option 1&lt;/label&gt;
+        &lt;label&gt;&lt;input type="checkbox" name="prefs[]" value="2"&gt; Option 2&lt;/label&gt;
+        &lt;label&gt;&lt;input type="checkbox" name="prefs[]" value="3"&gt; Option 3&lt;/label&gt;
+        &lt;label&gt;&lt;input type="checkbox" name="prefs[]" value="4"&gt; Option 4&lt;/label&gt;
+        &lt;label&gt;&lt;input type="checkbox" name="prefs[]" value="5"&gt; Option 5&lt;/label&gt;
+      &lt;/div&gt;
+    &lt;/fieldset&gt;
+  <mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;p class="form-result" role="status" hidden&gt;
+    Valid selections. This demo hasn’t sent your data.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
+						</micro-lighter>
+						<div class="demo" data-demo-label="Live example">
+							<form id="form7">
+								<label>
+									Email address
+									<input type="email" required name="email" />
+								</label>
+								<form-required-checkboxes required="3">
+									<fieldset>
+										<legend>Choose 3 preferences</legend>
+										<div>
+											<label
+												><input
+													type="checkbox"
+													name="prefs[]"
+													value="1"
+												/>
+												Option 1</label
+											>
+											<label
+												><input
+													type="checkbox"
+													name="prefs[]"
+													value="2"
+												/>
+												Option 2</label
+											>
+											<label
+												><input
+													type="checkbox"
+													name="prefs[]"
+													value="3"
+												/>
+												Option 3</label
+											>
+											<label
+												><input
+													type="checkbox"
+													name="prefs[]"
+													value="4"
+												/>
+												Option 4</label
+											>
+											<label
+												><input
+													type="checkbox"
+													name="prefs[]"
+													value="5"
+												/>
+												Option 5</label
+											>
+										</div>
+									</fieldset>
+								</form-required-checkboxes>
+								<button type="submit">Submit</button>
+								<button type="reset">Reset</button>
+								<p class="form-result" role="status" hidden>
+									Valid selections. This demo hasn’t sent your
+									data.
+								</p>
+							</form>
+						</div>
+					</div>
+				</div>
 			</section>
 
 			<!-- Range Example -->
-			<section>
-				<h2>Range Required</h2>
+			<section id="selection-limits">
+				<h2>Set selection limits</h2>
 				<p>
-					Require a minimum and maximum number of checkbox selections.
+					Use a range for a minimum and maximum, or start at zero when
+					selections are optional.
 				</p>
 
-				<div class="demo-section">
-					<h3>Require 2-4 Selections</h3>
+				<div class="demo-section" id="require-two-to-four">
+					<h3>Choose two through four interests</h3>
 					<p>
-						This example requires between 2 and 4 checkboxes to be
-						selected.
+						<code>required="2-4"</code> accepts two, three, or four
+						selections.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -197,7 +327,8 @@
 							<pre
 								aria-label="Require 2-4 Selections code 2"
 								tabindex="0"
-							><code><mark>&lt;form-required-checkboxes required="2-4"&gt;</mark>
+							><code>&lt;form id="form2"&gt;
+<mark>&lt;form-required-checkboxes required="2-4"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Select 2-4 interests&lt;/legend&gt;
     &lt;div&gt;
@@ -233,7 +364,13 @@
       &lt;/label&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;p class="form-result" role="status" hidden&gt;
+    Valid selections. This demo hasn’t sent your data.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<form id="form2">
@@ -302,22 +439,11 @@
 						</div>
 					</div>
 				</div>
-			</section>
-
-			<!-- Maximum Only Example -->
-			<section>
-				<h2>Maximum Only (Optional)</h2>
-				<p>
-					Set a maximum number of selections with no minimum
-					requirement (0-N).
-				</p>
-
-				<div class="demo-section">
-					<h3>Up to 3 Selections (Optional)</h3>
+				<div class="demo-section" id="optional-maximum">
+					<h3>Choose up to three toppings</h3>
 					<p>
-						This example allows up to 3 selections but doesn't
-						require any. The form will fail validation if more than
-						3 are selected.
+						<code>required="0-3"</code> accepts no selections.
+						Selecting more than three prevents submission.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -329,7 +455,8 @@
 							<pre
 								aria-label="Up to 3 Selections (Optional) code 3"
 								tabindex="0"
-							><code><mark>&lt;form-required-checkboxes required="0-3"&gt;</mark>
+							><code>&lt;form id="form3"&gt;
+<mark>&lt;form-required-checkboxes required="0-3"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Choose up to 3 toppings&lt;/legend&gt;
     &lt;div&gt;
@@ -360,7 +487,13 @@
       &lt;/label&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;p class="form-result" role="status" hidden&gt;
+    Valid selections. This demo hasn’t sent your data.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<form id="form3">
@@ -424,20 +557,20 @@
 			</section>
 
 			<!-- Custom Messages Example -->
-			<section>
-				<h2>Custom Messages</h2>
+			<section class="demo-section" id="custom-messages">
+				<h2>Match your application’s vocabulary</h2>
 				<p>
-					Override the default notice and error messages with custom
-					text.
+					Set <code>notice</code> and <code>error</code> for one
+					group. These messages refer to colors rather than generic
+					choices. For messages shared across groups, register a
+					complete language message set before connecting them; see
+					<a
+						href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#localization"
+						>localization</a
+					>.
 				</p>
 
-				<div class="demo-section">
-					<h3>Custom Notice and Error Messages</h3>
-					<p>
-						Use the <code>notice</code> and
-						<code>error</code> attributes to provide custom
-						messaging.
-					</p>
+				<div>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -448,7 +581,8 @@
 							<pre
 								aria-label="Custom Notice and Error Messages code 4"
 								tabindex="0"
-							><code><mark>&lt;form-required-checkboxes&#32;
+							><code>&lt;form id="form4"&gt;
+<mark>&lt;form-required-checkboxes&#32;
   required="3" 
   notice="Pick exactly 3 colors you like" 
   error="You must select exactly 3 colors"&gt;</mark>
@@ -482,7 +616,13 @@
       &lt;/label&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;p class="form-result" role="status" hidden&gt;
+    Valid selections. This demo hasn’t sent your data.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<form id="form4">
@@ -552,14 +692,16 @@
 			</section>
 
 			<!-- Localization Example -->
-			<section>
-				<h2>Localization</h2>
+			<section id="translated-messages">
+				<h2>Translate group messages</h2>
 				<p>
-					The component supports 16 languages out of the box. Use the
-					<code>lang</code> attribute to set the language.
+					Set <code>lang</code> to use built-in messages. Translate
+					the authored legend, labels, buttons, and result text too.
+					These example forms are translated; the surrounding tutorial
+					and shared code controls remain in English.
 				</p>
 
-				<div class="demo-section">
+				<div class="demo-section" id="spanish-messages">
 					<h3>Spanish (Español)</h3>
 					<p>
 						Setting <code>lang="es"</code> displays messages in
@@ -569,13 +711,16 @@
 						<micro-lighter
 							class="code-panel"
 							language="html"
-							controls="copy"
 							data-label="HTML"
+							controls="copy"
+							lang="en"
 						>
 							<pre
-								aria-label="Spanish (Español) code 5"
+								aria-label="Código del ejemplo en español"
+								lang="es"
 								tabindex="0"
-							><code><mark>&lt;form-required-checkboxes&#32;
+							><code>&lt;form id="form5" lang="es"&gt;
+<mark>&lt;form-required-checkboxes&#32;
   required="2-4" 
   lang="es"&gt;</mark>
   &lt;fieldset&gt;
@@ -608,10 +753,20 @@
       &lt;/label&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+  &lt;button type="reset"&gt;Restablecer&lt;/button&gt;
+  &lt;p class="form-result" role="status" lang="es" hidden&gt;
+    Selecciones válidas. Esta demostración no ha enviado tus datos.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<form id="form5">
+						<div
+							class="demo"
+							data-demo-label="Ejemplo en vivo"
+							lang="es"
+						>
+							<form id="form5" lang="es">
 								<form-required-checkboxes
 									required="2-4"
 									lang="es"
@@ -680,7 +835,7 @@
 					</div>
 				</div>
 
-				<div class="demo-section">
+				<div class="demo-section" id="french-messages">
 					<h3>French (Français)</h3>
 					<p>
 						Setting <code>lang="fr"</code> displays messages in
@@ -690,13 +845,16 @@
 						<micro-lighter
 							class="code-panel"
 							language="html"
-							controls="copy"
 							data-label="HTML"
+							controls="copy"
+							lang="en"
 						>
 							<pre
-								aria-label="French (Français) code 6"
+								aria-label="Code de l’exemple en français"
+								lang="fr"
 								tabindex="0"
-							><code><mark>&lt;form-required-checkboxes&#32;
+							><code>&lt;form id="form6" lang="fr"&gt;
+<mark>&lt;form-required-checkboxes&#32;
   required="3" 
   lang="fr"&gt;</mark>
   &lt;fieldset&gt;
@@ -724,10 +882,20 @@
       &lt;/label&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark>
+  &lt;button type="submit"&gt;Soumettre&lt;/button&gt;
+  &lt;button type="reset"&gt;Réinitialiser&lt;/button&gt;
+  &lt;p class="form-result" role="status" lang="fr" hidden&gt;
+    Choix valides. Cette démonstration n’a pas envoyé vos données.
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<form id="form6">
+						<div
+							class="demo"
+							data-demo-label="Exemple interactif"
+							lang="fr"
+						>
+							<form id="form6" lang="fr">
 								<form-required-checkboxes
 									required="3"
 									lang="fr"
@@ -785,189 +953,6 @@
 						</div>
 					</div>
 				</div>
-			</section>
-
-			<!-- Multi-Field Form Example -->
-			<section>
-				<h2>Complete Form Example</h2>
-				<p>
-					The component works with other form fields and validation.
-				</p>
-
-				<div class="demo-section">
-					<h3>Form with Multiple Fields</h3>
-					<p>
-						This demonstrates how the component integrates with
-						standard form fields. The validation runs in the correct
-						order.
-					</p>
-					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Form with Multiple Fields code 7"
-								tabindex="0"
-							><code>&lt;form&gt;
-  &lt;label&gt;
-    Email address
-    &lt;input type="email" 
-           required 
-           name="email"&gt;
-  &lt;/label&gt;
-
-  <mark>&lt;form-required-checkboxes required="3"&gt;</mark>
-    &lt;fieldset&gt;
-      &lt;legend&gt;Choose 3 preferences&lt;/legend&gt;
-      &lt;div&gt;
-        &lt;label&gt;
-          &lt;input type="checkbox" 
-                 name="prefs[]" value="1"&gt;
-          Option 1
-        &lt;/label&gt;
-        &lt;label&gt;
-          &lt;input type="checkbox" 
-                 name="prefs[]" value="2"&gt;
-          Option 2
-        &lt;/label&gt;
-        &lt;label&gt;
-          &lt;input type="checkbox" 
-                 name="prefs[]" value="3"&gt;
-          Option 3
-        &lt;/label&gt;
-        &lt;label&gt;
-          &lt;input type="checkbox" 
-                 name="prefs[]" value="4"&gt;
-          Option 4
-        &lt;/label&gt;
-        &lt;label&gt;
-          &lt;input type="checkbox" 
-                 name="prefs[]" value="5"&gt;
-          Option 5
-        &lt;/label&gt;
-      &lt;/div&gt;
-    &lt;/fieldset&gt;
-  <mark>&lt;/form-required-checkboxes&gt;</mark>
-
-  &lt;button type="submit"&gt;Submit&lt;/button&gt;
-&lt;/form&gt;</code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<form id="form7">
-								<label>
-									Email address
-									<input type="email" required name="email" />
-								</label>
-
-								<form-required-checkboxes required="3">
-									<fieldset>
-										<legend>Choose 3 preferences</legend>
-										<div>
-											<label>
-												<input
-													type="checkbox"
-													name="prefs[]"
-													value="1"
-												/>
-												Option 1
-											</label>
-											<label>
-												<input
-													type="checkbox"
-													name="prefs[]"
-													value="2"
-												/>
-												Option 2
-											</label>
-											<label>
-												<input
-													type="checkbox"
-													name="prefs[]"
-													value="3"
-												/>
-												Option 3
-											</label>
-											<label>
-												<input
-													type="checkbox"
-													name="prefs[]"
-													value="4"
-												/>
-												Option 4
-											</label>
-											<label>
-												<input
-													type="checkbox"
-													name="prefs[]"
-													value="5"
-												/>
-												Option 5
-											</label>
-										</div>
-									</fieldset>
-								</form-required-checkboxes>
-
-								<button type="submit">Submit</button>
-								<button type="reset">Reset</button>
-								<p class="form-result" role="status" hidden>
-									Valid selections. This demo hasn’t sent your
-									data.
-								</p>
-							</form>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- API Reference -->
-			<section class="api-reference">
-				<h2>API Reference</h2>
-				<p>
-					For complete documentation, see the
-					<a
-						href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md"
-						>README</a
-					>:
-				</p>
-				<ul>
-					<li>
-						<a
-							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#attributes"
-							>Attributes</a
-						>
-						(<code>required</code>, <code>notice</code>,
-						<code>error</code>, <code>lang</code>)
-					</li>
-					<li>
-						<a
-							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#static-methods"
-							>Static Methods</a
-						>
-						(<code>registerTranslations</code>)
-					</li>
-					<li>
-						<a
-							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#localization"
-							>Localization</a
-						>
-						(16 supported languages)
-					</li>
-					<li>
-						<a
-							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#browser-support"
-							>Browser Support</a
-						>
-					</li>
-					<li>
-						<a
-							href="https://github.com/aarongustafson/form-required-checkboxes/blob/main/README.md#examples"
-							>More Examples</a
-						>
-					</li>
-				</ul>
 			</section>
 		</main>
 

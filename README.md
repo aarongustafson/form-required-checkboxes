@@ -6,64 +6,61 @@
 [![License](https://img.shields.io/npm/l/@aarongustafson/form-required-checkboxes)](https://github.com/aarongustafson/form-required-checkboxes/blob/main/LICENSE)
 [![Type definitions](https://img.shields.io/npm/types/@aarongustafson/form-required-checkboxes)](https://github.com/aarongustafson/form-required-checkboxes/blob/main/form-required-checkboxes.d.ts)
 
-Currently, we can only make checkboxes required or not, individually. In some cases you need to be able to set a specific number of checkboxes that need to be checked. The `form-required-checkboxes` web component enables that.
-
-## TypeScript & Framework Support
-
-This component ships with full TypeScript definitions (`.d.ts`), enabling type-safe usage in TypeScript projects and improved autocompletion in editors. Types are exported in the package and automatically picked up by modern build tools.
-
-### Property Reflection & Framework Compatibility
-
-All key properties (`required`, `notice`, `error`, `lang`) are now fully reflected as attributes, ensuring compatibility with frameworks and declarative usage. The component also implements an internal `_upgradeProperty` method for seamless property/attribute sync when used with frameworks that set properties before element definition.
+`<form-required-checkboxes>` adds exact-count, range, and optional-maximum
+validation to a group of native checkboxes. Use a `fieldset` with a `legend`,
+labeled checkboxes that share a `name`, and a `required` count or range.
+The checkboxes work without JavaScript, but group-count validation needs the
+component. Always validate selections on the server too.
 
 ## Demos
 
-- [Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
-- [Unpkg.com Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/unpkg.html) ([Source](./demo/unpkg.html))
-- [ESM.sh Demo](https://aarongustafson.github.io/form-required-checkboxes/demo/esm.html) ([Source](./demo/esm.html))
+- [Exact count, selection limits, and custom messages](https://aarongustafson.github.io/form-required-checkboxes/demo/) ([Source](./demo/index.html))
+- [Spanish](https://aarongustafson.github.io/form-required-checkboxes/demo/#spanish-messages) and [French](https://aarongustafson.github.io/form-required-checkboxes/demo/#french-messages) examples
+- [Unpkg.com demo](https://aarongustafson.github.io/form-required-checkboxes/demo/unpkg.html) ([Source](./demo/unpkg.html))
+- [ESM.sh demo](https://aarongustafson.github.io/form-required-checkboxes/demo/esm.html) ([Source](./demo/esm.html))
 
-## Installation
+## Installation and usage
 
 ```bash
 npm install @aarongustafson/form-required-checkboxes
 ```
 
-## Usage
-
-### Option 1: Import the class and define manually
-
-Import the class and define the custom element with your preferred tag name:
-
-```javascript
-import { FormRequiredCheckboxesElement } from '@aarongustafson/form-required-checkboxes';
-
-// Define with default name
-customElements.define(
-	'form-required-checkboxes',
-	FormRequiredCheckboxesElement,
-);
-
-// Or define with a custom name
-customElements.define('my-checkbox-group', FormRequiredCheckboxesElement);
-```
-
-### Option 2: Auto-define the custom element (browser environments only)
-
-Use the guarded definition helper to register the element when `customElements` is available:
+Import the guarded definition helper to register `form-required-checkboxes`
+when `customElements` is available:
 
 ```javascript
 import '@aarongustafson/form-required-checkboxes/define.js';
 ```
 
-If you prefer to control when the element is registered, call the helper directly:
+Wrap the checkbox group, not the whole form. This example requires exactly
+two skills. Keep the limit in the legend so people can follow it before
+the component loads.
 
-```javascript
-import { defineFormRequiredCheckboxes } from '@aarongustafson/form-required-checkboxes/define.js';
-
-defineFormRequiredCheckboxes();
+```html
+<form>
+	<form-required-checkboxes required="2">
+		<fieldset>
+			<legend>Choose your top 2 skills</legend>
+			<label>
+				<input type="checkbox" name="skills[]" value="js" />
+				JavaScript
+			</label>
+			<label>
+				<input type="checkbox" name="skills[]" value="py" />
+				Python
+			</label>
+			<label>
+				<input type="checkbox" name="skills[]" value="rust" />
+				Rust
+			</label>
+		</fieldset>
+	</form-required-checkboxes>
+	<button type="submit">Submit</button>
+	<button type="reset">Reset</button>
+</form>
 ```
 
-You can also include the guarded script from HTML:
+For a direct browser import, use a module script:
 
 ```html
 <script
@@ -72,9 +69,7 @@ You can also include the guarded script from HTML:
 ></script>
 ```
 
-### CDN Usage
-
-You can also use the component directly from a CDN:
+Or use the [unpkg demo](./demo/unpkg.html) import:
 
 ```html
 <script
@@ -83,313 +78,194 @@ You can also use the component directly from a CDN:
 ></script>
 ```
 
-## API
+### Manual registration
 
-### Attributes
+The package’s main export and `form-required-checkboxes.js` export the class
+without registering it. Define it once with the default name or your own name:
 
-<ul>
-  <li><code>required</code> - Represents the range of required values.
-  <ul>
-    <li>Single number (e.g., 3) requires exactly that number of choices.</li>
-    <li>Range (e.g., 3-5) requires a minimum of the first number and a max of the second number be chosen.</li>
-    <li>Max (e.g., 0-3) requires a minimum of zero and a max of the second number to be chosen.</li>
-    </ul>
-  </li>
-  <li><code>notice</code> (optional) - The description that explains details of the required value in plain language. If you don't supply one, the component will create one for you based on the current language. This description will be added as a <code>small</code> element within the component (as a sibling to the fieldset)</li>
-  <li><code>error</code> (optional) - The validation error you'd like to show when the validation criteria is not met. If not provided, an appropriate error message will be generated based on the current language.</li>
-  <li><code>lang</code> (optional) - Language code for localized messages (e.g., "en", "es", "fr", "de"). Falls back to the nearest ancestor's <code>lang</code> attribute or the document language.</li>
-</ul>
+```javascript
+import { FormRequiredCheckboxesElement } from '@aarongustafson/form-required-checkboxes';
 
-### Static Methods
+customElements.define(
+	'form-required-checkboxes',
+	FormRequiredCheckboxesElement,
+);
+```
 
-<ul>
-  <li><code>FormRequiredCheckboxesElement.registerTranslations(translations)</code> - Register custom translations or override existing ones. See the Localization section below for details.</li>
-</ul>
+Importing `define.js` registers the default name automatically. It also exports
+`defineFormRequiredCheckboxes()`, which you can call again safely. The package
+includes [TypeScript declarations](./form-required-checkboxes.d.ts).
+
+## Behavior and validation
+
+Native HTML `required` makes an individual checkbox required; it can’t enforce
+an exact count or range across a group. Don’t put it on every checkbox unless
+each one must be checked.
+
+When the component connects, it reads its configuration and collects its
+checkboxes. It adds a `small` notice after the legend and includes both the
+legend and notice in the fieldset’s accessible name through `aria-labelledby`.
+Use distinct group names on a page: the component derives notice and, when
+needed, legend IDs from the first checkbox’s name.
+
+The component counts selections on `submit` and `formdata`. If the count is
+outside the limits, it prevents the event’s default action and sets a custom
+validity error on the first checkbox. For native submission, the browser can
+show that error and focus the checkbox. Other invalid fields can prevent
+submission before the group’s handler runs; the component doesn’t promise a
+validation order for an entire form.
+
+Changing any checkbox clears the group’s custom validity. Native reset restores
+checkbox values, but **does not clear an existing custom error**. After an
+invalid attempt, change a checkbox before resubmitting, or have your application
+explicitly clear validity with the native `setCustomValidity('')` API.
+
+### Author responsibilities and lifecycle
+
+- Supply at least one checkbox, a `fieldset`, a `legend`, labels, and a valid
+  count or ascending range. A missing `required` value throws during setup;
+  malformed limits aren’t validated as a separate configuration error.
+- Keep each group’s checkboxes under the component and give them the same
+  `name`. Keep the group inside its form for submission validation.
+- Configure attributes, properties, and translations before connection.
+  Reflected property changes update attributes, but the component doesn’t
+  observe later changes or refresh its collected checkbox list.
+- Keep useful selection instructions visible without JavaScript. Native
+  checkbox behavior remains available if registration fails; count validation
+  does not.
+- Validate submitted values on the server. Client-side validation isn’t a
+  security boundary, and preventing `formdata` doesn’t cancel construction of
+  a `FormData` object.
+
+Disconnecting removes the component’s form and checkbox event listeners.
+It doesn’t remove its generated notice, restore `aria-labelledby`, or clear
+custom validity. Initialization uses a queued animation frame that isn’t
+canceled on disconnect; reconnecting can add another notice. Don’t rely on
+disconnect/reconnect as a configuration refresh or cleanup mechanism.
+
+## Attributes and properties
+
+These properties reflect to attributes. Unset `required`, `notice`, and `error`
+properties return `null`; the component’s `lang` getter also returns `null`
+when the attribute is absent. Setting any of them to `null` or `undefined`
+removes its attribute. Properties assigned before definition are reapplied
+when the element connects.
+
+| Attribute/property | Values and behavior                                                                                                            | Default                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `required`         | A count such as `"3"` means exactly 3; `"2-4"` means 2 through 4; `"0-3"` allows 0 through 3. This is a string, not a Boolean. | Required; no default                                       |
+| `notice`           | Plain text explaining the selection limits. The component inserts it in a `small` element after the legend.                    | Generated from the limits and language                     |
+| `error`            | Plain text for the first checkbox’s native validation message when the count is invalid.                                       | Generated from the limits and language                     |
+| `lang`             | Language code such as `"en"`, `"es"`, or `"fr"`.                                                                               | Nearest ancestor language, document language, then English |
+
+Empty `notice` and `error` attributes also use generated messages.
+
+## Static methods and events
+
+`FormRequiredCheckboxesElement.registerTranslations(translations)` registers
+message sets by language code or replaces existing sets. Call it before
+connecting instances that should use those messages.
+
+The component dispatches no custom events and exposes no instance validation
+command. Use native form and checkbox APIs; the component listens for
+`submit`, `formdata`, and checkbox `change` events.
 
 ## Localization
 
-The component includes built-in translations for 16 languages. Messages are automatically generated based on the `lang` attribute.
+Use `notice` and `error` to match an application’s vocabulary for one group,
+or register a shared message set. Explicit, nonempty instance messages take
+precedence over generated translations. See the
+[custom-message demo](./demo/index.html#custom-messages).
 
-**Supported languages:**
+Language selection uses the element’s `lang`, then its nearest ancestor’s
+`lang`, then the document’s language, then `en`. Regional codes such as `es-MX`
+use the base language (`es`); an unknown language falls back to English.
 
-- **en** - English
-- **zh** - Chinese (Mandarin)
-- **hi** - Hindi
-- **es** - Spanish
-- **fr** - French
-- **ar** - Arabic
-- **bn** - Bengali
-- **pt** - Portuguese
-- **ru** - Russian
-- **ja** - Japanese
-- **de** - German
-- **pa** - Punjabi
-- **jv** - Javanese
-- **ko** - Korean
-- **vi** - Vietnamese
-- **it** - Italian
+Built-in languages are `en`, `zh`, `hi`, `es`, `fr`, `ar`, `bn`, `pt`, `ru`,
+`ja`, `de`, `pa`, `jv`, `ko`, `vi`, and `it`. The
+[translation source](./translations.js) contains their messages.
 
-Regional language codes (e.g., `en-US`, `es-MX`) automatically fall back to their base language.
+### Register a complete message set
 
-### Using Built-in Languages
+Registration replaces a language’s object rather than merging its individual
+keys. Supply all five keys, even when you only want to change one message.
+Later registration of the same language replaces the earlier set. Missing
+templates can cause setup to fail.
 
-```html
-<form-required-checkboxes required="3" lang="es">
-	<fieldset>
-		<legend>Opciones</legend>
-		<!-- Will display: "Elija 3 de la lista" -->
-	</fieldset>
-</form-required-checkboxes>
-```
-
-The component will automatically detect the language from:
-
-1. The `lang` attribute on the element itself
-2. The `lang` attribute on the nearest ancestor element
-3. The document's `lang` attribute
-4. Falls back to English if none found
-
-### Registering Custom Translations
-
-You can register custom translations or override existing ones:
+| Key           | Used for                        | Placeholders     |
+| ------------- | ------------------------------- | ---------------- |
+| `exact`       | Exact-count notice              | `{n}`            |
+| `max`         | Optional-maximum notice         | `{n}` (maximum)  |
+| `range`       | Range notice                    | `{min}`, `{max}` |
+| `error_exact` | Exact-count error               | `{n}`            |
+| `error_range` | Range or optional-maximum error | `{min}`, `{max}` |
 
 ```javascript
-import { FormRequiredCheckboxesElement } from '@aarongustafson/form-required-checkboxes/form-required-checkboxes.js';
+import { FormRequiredCheckboxesElement } from '@aarongustafson/form-required-checkboxes';
 
-FormRequiredCheckboxesElement.registerTranslations({
-	pt: {
-		exact: 'Escolha {n} da lista',
-		max: 'Escolha até {n} da lista',
-		range: 'Escolha entre {min} e {max} da lista',
-		error_exact: 'Você deve escolher exatamente {n} opções',
-		error_range: 'Você deve escolher entre {min} e {max} opções',
-	},
-});
-```
-
-### Overriding Specific Messages
-
-You can override just specific messages for a language:
-
-```javascript
 FormRequiredCheckboxesElement.registerTranslations({
 	en: {
-		exact: 'Pick exactly {n} items',
-		// Other messages will use defaults
+		exact: 'Pick exactly {n} skills',
+		max: 'Pick up to {n} skills',
+		range: 'Pick between {min} and {max} skills',
+		error_exact: 'Please pick exactly {n} skills',
+		error_range: 'Please pick between {min} and {max} skills',
 	},
 });
+
+customElements.define(
+	'form-required-checkboxes',
+	FormRequiredCheckboxesElement,
+);
 ```
 
-### Per-Instance Overrides
+## Styling and accessibility
 
-You can still override messages on individual instances using attributes:
+The component adds no stylesheet, shadow root, CSS custom properties, or parts.
+Style the native fieldset, legend, labels, and checkboxes in your application.
+You can target the generated notice with `form-required-checkboxes small`.
+Keep its text readable on its background and preserve native keyboard focus.
 
-```html
-<form-required-checkboxes
-	required="3"
-	notice="Select exactly 3 items please"
-	error="You must select 3 items"
->
-	<!-- ... -->
-</form-required-checkboxes>
-```
+Selection limits and errors need text, not just color. The component uses the
+browser’s validation UI rather than adding a persistent inline error. If your
+application needs visible errors that remain alongside the group, provide
+that presentation and its programmatic association. The demos show a persistent
+status after valid submission without sending data.
 
-## Markup Assumptions
+## Browser support and testing limits
 
-This web component assumes you will be marking up your checkbox group in a `fieldset` with a `legend` and that all of the checkboxes share a `name` (e.g., "foo[]").
+The component requires Custom Elements v1 and JavaScript modules. Local browser
+tests cover bundled Chromium, Firefox, and WebKit: keyboard use, native
+validation, localized notices, narrow-screen reflow, and module-failure and
+no-JavaScript fallbacks. Automated checks don’t establish assistive-technology
+support or accessibility conformance.
 
-## Examples
-
-### Basic Usage - Exact Number Required
-
-```html
-<form>
-	<form-required-checkboxes required="3">
-		<fieldset>
-			<legend>Choose your top 3 preferences</legend>
-			<label
-				><input type="checkbox" name="preferences[]" value="1" /> Option
-				1</label
-			>
-			<label
-				><input type="checkbox" name="preferences[]" value="2" /> Option
-				2</label
-			>
-			<label
-				><input type="checkbox" name="preferences[]" value="3" /> Option
-				3</label
-			>
-			<label
-				><input type="checkbox" name="preferences[]" value="4" /> Option
-				4</label
-			>
-			<label
-				><input type="checkbox" name="preferences[]" value="5" /> Option
-				5</label
-			>
-		</fieldset>
-	</form-required-checkboxes>
-
-	<button type="submit">Submit</button>
-</form>
-```
-
-### Range of Required Checkboxes
-
-```html
-<form-required-checkboxes required="2-4">
-	<fieldset>
-		<legend>Choose 2-4 items</legend>
-		<label><input type="checkbox" name="items[]" value="a" /> Item A</label>
-		<label><input type="checkbox" name="items[]" value="b" /> Item B</label>
-		<label><input type="checkbox" name="items[]" value="c" /> Item C</label>
-		<label><input type="checkbox" name="items[]" value="d" /> Item D</label>
-		<label><input type="checkbox" name="items[]" value="e" /> Item E</label>
-	</fieldset>
-</form-required-checkboxes>
-```
-
-### Optional Maximum (0-N)
-
-```html
-<form-required-checkboxes required="0-3">
-	<fieldset>
-		<legend>Choose up to 3 options (optional)</legend>
-		<label
-			><input type="checkbox" name="options[]" value="x" /> Option
-			X</label
-		>
-		<label
-			><input type="checkbox" name="options[]" value="y" /> Option
-			Y</label
-		>
-		<label
-			><input type="checkbox" name="options[]" value="z" /> Option
-			Z</label
-		>
-	</fieldset>
-</form-required-checkboxes>
-```
-
-### Custom Notice and Error Messages
-
-```html
-<form-required-checkboxes
-	required="3"
-	notice="You must select exactly 3 skills"
-	error="Please select exactly 3 skills to continue"
->
-	<fieldset>
-		<legend>Select your top 3 skills</legend>
-		<label
-			><input type="checkbox" name="skills[]" value="js" />
-			JavaScript</label
-		>
-		<label
-			><input type="checkbox" name="skills[]" value="py" /> Python</label
-		>
-		<label
-			><input type="checkbox" name="skills[]" value="java" /> Java</label
-		>
-		<label><input type="checkbox" name="skills[]" value="go" /> Go</label>
-		<label
-			><input type="checkbox" name="skills[]" value="rust" /> Rust</label
-		>
-	</fieldset>
-</form-required-checkboxes>
-```
-
-## Browser Support
-
-This web component works in all modern browsers that support:
-
-- Custom Elements v1
-- ES Modules (for module usage)
-
-For older browsers, you may need polyfills for Custom Elements.
-
-## Styling and validation feedback
-
-The component adds no stylesheet. Keep the native checkboxes, labels, fieldset,
-and legend, and give the generated `small` notice a foreground that’s readable
-on its actual background. Don’t use color alone to explain selection limits or
-errors. Supply `notice` and `error` text for an instance, or use the localization
-API for translated messages.
-
-The demos pair page text with `Canvas`, button and inline-code text with
-`ButtonFace`, and text fields and code blocks with `Field`. Supporting text
-inside a group inherits its foreground; the Canvas-backed footer uses an 80%
-foreground mix, with full-strength text in forced colors and increased contrast.
-Button hover adds a small foreground wash and an underline without fading the
-label. Forced colors use solid `Field` and `ButtonFace` backgrounds for their
-paired text, so readability doesn’t depend on gradients that browsers may suppress.
-Native checkbox painting and keyboard focus remain browser-controlled.
-Keep foreground/background pairs together when overriding these styles, and
-test text, boundaries, and focus on every adjacent surface.
-
-Before upgrade, or if the module fails, the authored checkboxes, labels, and
-selection limits remain available. Count validation needs JavaScript; native
-HTML `required` cannot enforce a group’s exact count or range. Always validate
-selections on the server too. In the enhanced demo, invalid submission uses the
-browser’s validation message and focuses the first checkbox when appropriate;
-valid submission shows authored status text without sending data. Changing a
-checkbox clears the component’s custom validity. Native reset restores checkbox
-values, but does not itself clear an existing custom error; change a checkbox
-before resubmitting after an invalid attempt.
-
-Browser tests cover the three import pages in bundled Chromium, Firefox, and
-WebKit, including 19 recorded study palettes, keyboard use, native validation,
-localized notices, 320px reflow with enlarged text, and module-failure and
-no-JavaScript fallbacks. Palette substitution is a regression aid, not a test of
-OS repainting or browser validation-tooltip contrast. Actual Windows Contrast
-themes, Firefox forced-color preferences, shipping mobile browsers, platform
-accent changes, and assistive-technology checks remain manual work. Ubuntu
-WebKit’s known dark `ButtonText`/`ButtonFace` contrast limitation is an isolated
-expected failure, not a passing contrast result.
+Native validation-tooltip contrast, actual Windows Contrast themes, Firefox
+forced-color preferences, shipping mobile browsers, and assistive technology
+remain manual checks. Ubuntu WebKit’s known dark `ButtonText`/`ButtonFace`
+contrast limitation is an isolated expected failure, not a passing result.
 
 ## Development
 
-### Testing
-
 ```bash
-# Run tests
-npm test
+# Lint JavaScript, declarations, HTML, CSS, Markdown, JSON, and workflows
+npm run lint
 
-# Run tests once
+# Run unit tests once (npm test starts watch mode)
 npm run test:run
-
-# Run tests with UI
-npm run test:ui
-
-# Run tests with coverage
 npm run test:coverage
 
-# Install browser engines once, then run with one worker
+# Install browser engines once, then run the browser tests
 npx playwright install chromium firefox webkit
 npm run test:browser
+
+# Format files
+npm run format
 
 # Local no-cache demo preview
 PORT=3013 node scripts/serve.js
 ```
 
-### Linting and Formatting
+## License
 
-```bash
-# Check JavaScript, declarations, HTML, CSS, Markdown, JSON, and workflows
-npm run lint
-
-# Format code
-npm run format
-```
-
----
-
-## Changelog
-
-### 3.1.0 (Unreleased)
-
-- **TypeScript definitions**: Added `.d.ts` file and package export for full TypeScript support.
-- **Property reflection**: All key properties (`required`, `notice`, `error`, `lang`) now reflect as attributes for framework compatibility.
-- **\_upgradeProperty**: Ensures property/attribute sync for frameworks that set properties before element definition.
-- **Performance/memory**: Uses `requestAnimationFrame` for initialization, optimizes DOM queries, and ensures all event listeners are cleaned up in `disconnectedCallback`.
-- **Test coverage**: Expanded and improved tests for property reflection, upgrade, and event cleanup.
+[MIT](./LICENSE)
