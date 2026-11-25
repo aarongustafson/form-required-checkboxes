@@ -763,7 +763,9 @@ test('embedded translations include controls, errors, results, and language sema
 		],
 	]) {
 		const form = page.locator(`#${id}`);
-		await expect(form).toHaveAttribute('lang', language);
+		expect(
+			await form.evaluate((element) => element.closest('.demo').lang),
+		).toBe(language);
 		await form
 			.getByRole('button', { name: submitLabel, exact: true })
 			.click();

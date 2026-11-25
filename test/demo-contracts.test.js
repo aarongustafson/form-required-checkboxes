@@ -138,6 +138,20 @@ it('keeps snippets focused while leaving complete live checkbox groups', async (
 			snippet.innerHTML = code.textContent;
 			expect(snippet.content.querySelector('.form-result')).toBeNull();
 			expect(snippet.content.querySelector('form[id]')).toBeNull();
+			const language = code.closest('pre').getAttribute('lang');
+			if (language) {
+				expect(snippet.content.querySelector('[lang]')).toBeNull();
+				expect(snippet.content.querySelector('form')).toBeNull();
+				expect(code.closest('pre').getAttribute('data-language')).toBe(
+					'html',
+				);
+				expect(
+					code
+						.closest('.code-demo-pair')
+						.querySelector('.demo')
+						.getAttribute('lang'),
+				).toBe(language);
+			}
 			for (const group of snippet.content.querySelectorAll(
 				'form-required-checkboxes',
 			)) {

@@ -858,7 +858,7 @@ document.querySelector('[data-allow-three]').addEventListener('click', () =&gt; 
 					<h3>Spanish (Español)</h3>
 					<p>
 						These whole-phrase templates inherit Spanish from their
-						containing form.
+						live example’s container.
 					</p>
 					<div class="code-demo-pair">
 						<tabbed-interface data-demo-tabs presentation="linear">
@@ -873,9 +873,9 @@ document.querySelector('[data-allow-three]').addEventListener('click', () =&gt; 
 								<pre
 									aria-label="Código del ejemplo en español"
 									lang="es"
+									data-language="html"
 									tabindex="0"
-								><code>&lt;form lang="es"&gt;
-<mark>&lt;form-required-checkboxes&#32;
+								><code><mark>&lt;form-required-checkboxes&#32;
   required="2-4" 
   notice-message="Elija entre {min} y {max} de la lista"
   error-message="Debe elegir entre {min} y {max} opciones"&gt;</mark>
@@ -884,12 +884,15 @@ document.querySelector('[data-allow-three]').addEventListener('click', () =&gt; 
     &lt;label&gt; &lt;input type="checkbox" name="opciones[]" value="1"&gt; Opción 1 &lt;/label&gt;
     &lt;!-- options continue --&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark>
-&lt;/form&gt;</code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 							</micro-lighter>
 							<h4 data-demo-tab="live" hidden>Live example</h4>
-							<div class="demo" data-demo-label="Ejemplo en vivo">
-								<form id="form5" lang="es">
+							<div
+								class="demo"
+								data-demo-label="Ejemplo en vivo"
+								lang="es"
+							>
+								<form id="form5">
 									<form-required-checkboxes
 										required="2-4"
 										notice-message="Elija entre {min} y {max} de la lista"
@@ -964,7 +967,7 @@ document.querySelector('[data-allow-three]').addEventListener('click', () =&gt; 
 					<h3>French (Français)</h3>
 					<p>
 						Here, <code>{n}</code> represents the exact count; the
-						containing form supplies French.
+						live example’s container supplies French.
 					</p>
 					<div class="code-demo-pair">
 						<tabbed-interface data-demo-tabs presentation="linear">
@@ -979,9 +982,9 @@ document.querySelector('[data-allow-three]').addEventListener('click', () =&gt; 
 								<pre
 									aria-label="Code de l’exemple en français"
 									lang="fr"
+									data-language="html"
 									tabindex="0"
-								><code>&lt;form lang="fr"&gt;
-<mark>&lt;form-required-checkboxes&#32;
+								><code><mark>&lt;form-required-checkboxes&#32;
   required="3" 
   notice-message="Choisissez {n} de la liste"
   error-message="Vous devez choisir exactement {n} options"&gt;</mark>
@@ -990,15 +993,15 @@ document.querySelector('[data-allow-three]').addEventListener('click', () =&gt; 
     &lt;label&gt; &lt;input type="checkbox" name="choix[]" value="1"&gt; Choix 1 &lt;/label&gt;
     &lt;!-- options continue --&gt;
   &lt;/fieldset&gt;
-<mark>&lt;/form-required-checkboxes&gt;</mark>
-&lt;/form&gt;</code></pre>
+<mark>&lt;/form-required-checkboxes&gt;</mark></code></pre>
 							</micro-lighter>
 							<h4 data-demo-tab="live" hidden>Live example</h4>
 							<div
 								class="demo"
 								data-demo-label="Exemple interactif"
+								lang="fr"
 							>
-								<form id="form6" lang="fr">
+								<form id="form6">
 									<form-required-checkboxes
 										required="3"
 										notice-message="Choisissez {n} de la liste"
