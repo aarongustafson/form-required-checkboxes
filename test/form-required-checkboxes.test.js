@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { FormRequiredCheckboxesElement } from '../form-required-checkboxes.js';
 
 describe('FormRequiredCheckboxesElement', () => {
@@ -7,6 +7,256 @@ describe('FormRequiredCheckboxesElement', () => {
 	beforeEach(() => {
 		container = document.createElement('div');
 		document.body.appendChild(container);
+	});
+
+	describe('authored messages, state, and lifecycle', () => {
+		let container;
+		let translations;
+
+		beforeEach(() => {
+			translations = FormRequiredCheckboxesElement.customTranslations;
+			FormRequiredCheckboxesElement.customTranslations = {};
+			container = document.createElement('div');
+			document.body.append(container);
+		});
+
+		afterEach(() => {
+			container.remove();
+			FormRequiredCheckboxesElement.customTranslations = translations;
+			vi.restoreAllMocks();
+		});
+
+		async function group(attributes = 'required="1-2"') {
+			container.innerHTML += `<form>
+				<form-required-checkboxes ${attributes}>
+					<fieldset aria-labelledby="authored-name">
+						<legend id="authored-name">Choose skills</legend>
+						<label><input type="checkbox" name="skills[]" value="js" checked>JavaScript</label>
+						<label><input type="checkbox" name="skills[]" value="css">CSS</label>
+						<label><input type="checkbox" name="skills[]" value="html">HTML</label>
+					</fieldset>
+				</form-required-checkboxes>
+			</form>`;
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			return container.querySelector('form-required-checkboxes');
+		}
+
+		it('merges shared templates per rule and gives instance messages precedence', async () => {
+			container.innerHTML = `<script type="application/json" data-form-required-checkboxes-config>
+				{"notice-message":{"range":"De {min} à {max}, choisissez."},"error-message":"Entre {min} et {max}, s’il vous plaît."}
+			</script>`;
+			const element = await group();
+			const notice = element.querySelector('small');
+			expect(notice.textContent).toBe('De 1 à 2, choisissez.');
+			const checkbox = element.querySelector('input');
+			checkbox.focus();
+			element.noticeMessage = 'Maximum {max}; minimum {min}.';
+			expect(element.getAttribute('notice-message')).toBe(
+				'Maximum {max}; minimum {min}.',
+			);
+			expect(element.querySelector('small')).toBe(notice);
+			expect(notice.textContent).toBe('Maximum 2; minimum 1.');
+			expect(document.activeElement).toBe(checkbox);
+			expect(checkbox.checked).toBe(true);
+			element.noticeMessage = null;
+			expect(notice.textContent).toBe('De 1 à 2, choisissez.');
+			element.required = '0';
+			expect(notice.textContent).toBe('Choose 0 from the list');
+		});
+
+		it('keeps bundled languages and partially registered translations working', async () => {
+			FormRequiredCheckboxesElement.registerTranslations({
+				fr: { exact: 'Exactement {n} choix.' },
+			});
+			const element = await group('required="1" lang="fr"');
+			expect(element.querySelector('small').textContent).toBe(
+				'Exactement 1 choix.',
+			);
+			element.required = '1-2';
+			expect(element.querySelector('small').textContent).toBe(
+				'Choisissez entre 1 et 2 de la liste',
+			);
+			expect(element.lang).toBe('fr');
+			element.removeAttribute('lang');
+			expect(element.lang).toBe('');
+		});
+
+		it('exposes current state and deduplicated frozen change outcomes without checkbox values', async () => {
+			const element = await group();
+			expect(element.enhanced).toBe(true);
+			expect(element.checkedCount).toBe(1);
+			expect(element.valid).toBe(true);
+			const outcomes = [];
+			element.addEventListener(
+				'form-required-checkboxes:change',
+				(event) => outcomes.push(event),
+			);
+			const checkbox = element.querySelector('input');
+			checkbox.checked = false;
+			checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+			checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+			expect(outcomes).toHaveLength(1);
+			expect(outcomes[0].bubbles).toBe(true);
+			expect(outcomes[0].composed).toBe(true);
+			expect(outcomes[0].cancelable).toBe(false);
+			expect(outcomes[0].detail).toEqual({
+				checkedCount: 0,
+				minimum: 1,
+				maximum: 2,
+				valid: false,
+				source: 'change',
+			});
+			expect(Object.isFrozen(outcomes[0].detail)).toBe(true);
+			element.required = '0-2';
+			expect(element.valid).toBe(true);
+			expect(outcomes).toHaveLength(1);
+			checkbox.checked = true;
+			expect(element.refresh()).toBe(true);
+			expect(outcomes.at(-1).detail.source).toBe('refresh');
+		});
+
+		it('logs invalid configuration and retains the last valid enhancement', async () => {
+			const element = await group();
+			const notice = element.querySelector('small');
+			const previous = notice.textContent;
+			const error = vi
+				.spyOn(console, 'error')
+				.mockImplementation(() => {});
+			element.noticeMessage = '<img src=x>{unknown}';
+			expect(error).toHaveBeenCalled();
+			expect(notice.textContent).toBe(previous);
+			element.noticeMessage = 'Literal <img src=x>; choose {min}–{max}.';
+			expect(notice.querySelector('img')).toBeNull();
+			expect(notice.textContent).toContain('<img src=x>');
+			element.required = '3-1';
+			expect(element.refresh()).toBe(false);
+			expect(element.enhanced).toBe(true);
+			expect(element.valid).toBe(true);
+		});
+
+		it('restores authored associations and avoids duplicated notices on reconnect', async () => {
+			const element = await group();
+			const fieldset = element.querySelector('fieldset');
+			const input = element.querySelector('input');
+			element.remove();
+			expect(fieldset.getAttribute('aria-labelledby')).toBe(
+				'authored-name',
+			);
+			expect(element.querySelector('small')).toBeNull();
+			expect(element.enhanced).toBe(false);
+			expect(element.refresh()).toBe(false);
+			container.querySelector('form').append(element);
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			expect(element.querySelectorAll('small')).toHaveLength(1);
+			expect(element.querySelector('input')).toBe(input);
+			expect(input.checked).toBe(true);
+		});
+
+		it('does not initialize after removal before the scheduled frame', async () => {
+			const element = document.createElement('form-required-checkboxes');
+			element.required = '1';
+			element.innerHTML = '<input type="checkbox" name="choice">';
+			container.append(element);
+			element.remove();
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			expect(element.querySelector('small')).toBeNull();
+			expect(element.enhanced).toBe(false);
+		});
+
+		it('shares defaults without coupling instance overrides or generated IDs', async () => {
+			container.innerHTML = `<script type="application/json" data-form-required-checkboxes-config>
+				{"notice-message":"Choose {min} through {max}."}
+			</script>`;
+			const first = await group();
+			const second = document.createElement('form-required-checkboxes');
+			second.required = '0-2';
+			second.noticeMessage = 'At most {max}.';
+			second.innerHTML =
+				'<fieldset><legend>Other skills</legend><input type="checkbox" name="skills[]" value="one"></fieldset>';
+			container.append(second);
+			expect(second.refresh()).toBe(true);
+			expect(first.querySelector('small').textContent).toBe(
+				'Choose 1 through 2.',
+			);
+			expect(second.querySelector('small').textContent).toBe(
+				'At most 2.',
+			);
+			expect(first.querySelector('small').id).not.toBe(
+				second.querySelector('small').id,
+			);
+			container.querySelector('script').textContent =
+				'{"notice-message":"Limits: {min}–{max}."}';
+			expect(first.refresh()).toBe(true);
+			expect(first.querySelector('small').textContent).toBe(
+				'Limits: 1–2.',
+			);
+			expect(second.refresh()).toBe(true);
+			expect(second.querySelector('small').textContent).toBe(
+				'At most 2.',
+			);
+		});
+
+		it('retains the last good shared messages after invalid JSON and supports recovery', async () => {
+			container.innerHTML =
+				'<script type="application/json" data-form-required-checkboxes-config>{"notice-message":"Choose {min}–{max}."}</script>';
+			const element = await group();
+			const notice = element.querySelector('small');
+			const script = container.querySelector('script');
+			const error = vi
+				.spyOn(console, 'error')
+				.mockImplementation(() => {});
+			for (const text of [
+				'{',
+				'{"unexpected":"No"}',
+				'{"notice-message":{"other":"No"}}',
+				'{"notice-message":""}',
+			]) {
+				script.textContent = text;
+				expect(element.refresh()).toBe(false);
+				expect(notice.textContent).toBe('Choose 1–2.');
+			}
+			expect(error).toHaveBeenCalledTimes(4);
+			script.textContent = '{"notice-message":"From {min} to {max}."}';
+			expect(element.refresh()).toBe(true);
+			expect(notice.textContent).toBe('From 1 to 2.');
+		});
+
+		it('replays pre-definition properties without shadowing accessors', async () => {
+			const element = document.createElement('late-checkbox-messages');
+			element.required = '1';
+			element.noticeMessage = 'Select {n}.';
+			element.innerHTML =
+				'<fieldset><legend>Skills</legend><input type="checkbox" name="late"></fieldset>';
+			container.append(element);
+			customElements.define(
+				'late-checkbox-messages',
+				class extends FormRequiredCheckboxesElement {},
+			);
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			expect(Object.hasOwn(element, 'noticeMessage')).toBe(false);
+			expect(element.querySelector('small').textContent).toBe(
+				'Select 1.',
+			);
+			element.noticeMessage = 'One: {n}.';
+			expect(element.querySelector('small').textContent).toBe('One: 1.');
+		});
+
+		it('does not let an unowned group block unrelated form submissions', async () => {
+			const element = document.createElement('form-required-checkboxes');
+			element.required = '2';
+			element.innerHTML =
+				'<input type="checkbox" name="unowned"><input type="checkbox" name="unowned">';
+			container.append(element);
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			const form = document.createElement('form');
+			container.append(form);
+			const submit = new Event('submit', {
+				bubbles: true,
+				cancelable: true,
+			});
+			form.dispatchEvent(submit);
+			expect(submit.defaultPrevented).toBe(false);
+		});
 	});
 
 	afterEach(() => {

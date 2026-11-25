@@ -33,10 +33,11 @@
 			"import": "./index.js"
 		},
 		"./form-required-checkboxes.js": {
-			"import": "./form-required-checkboxes.js",
-			"types": "./form-required-checkboxes.d.ts"
+			"types": "./form-required-checkboxes.d.ts",
+			"import": "./form-required-checkboxes.js"
 		},
 		"./define.js": {
+			"types": "./define.d.ts",
 			"import": "./define.js"
 		},
 		"./custom-elements.json": "./custom-elements.json"
@@ -45,6 +46,7 @@
 		"form-required-checkboxes.js",
 		"form-required-checkboxes.d.ts",
 		"define.js",
+		"define.d.ts",
 		"index.js",
 		"translations.js",
 		"custom-elements.json",
@@ -58,6 +60,7 @@
 		"test": "vitest",
 		"test:ui": "vitest --ui",
 		"test:run": "vitest run",
+		"test:types": "tsc --noEmit --strict --target es2022 --module nodenext --moduleResolution nodenext test/types.ts",
 		"test:coverage": "vitest run --coverage",
 		"test:browser": "playwright test --workers=1",
 		"demo:check": "node scripts/check-demo-shared.js",
@@ -71,6 +74,7 @@
 		"postversion": "git push --follow-tags"
 	},
 	"devDependencies": {
+		"@aarongustafson/tabbed-interface": "3.1.0",
 		"@playwright/test": "^1.64.0",
 		"@open-wc/eslint-config": "^13.1.0",
 		"@testing-library/dom": "^10.4.2",
@@ -82,7 +86,8 @@
 		"happy-dom": "^21.0.4",
 		"prettier": "^3.9.9",
 		"vitest": "^5.0.5",
-		"microlighter": "2.2.0"
+		"microlighter": "2.2.0",
+		"typescript": "^7.0.2"
 	},
 	"publishConfig": {
 		"access": "public"

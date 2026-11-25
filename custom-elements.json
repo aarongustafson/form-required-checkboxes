@@ -12,7 +12,110 @@
 					"name": "FormRequiredCheckboxesElement",
 					"tagName": "form-required-checkboxes",
 					"description": "Web component that enables requirement rules for checkbox groups.",
-					"members": [],
+					"members": [
+						{
+							"kind": "field",
+							"name": "required",
+							"attribute": "required",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"description": "Authored exact count or ascending range; updates live."
+						},
+						{
+							"kind": "field",
+							"name": "noticeMessage",
+							"attribute": "notice-message",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"description": "Live notice template; supports {n}, {min}, and {max}."
+						},
+						{
+							"kind": "field",
+							"name": "errorMessage",
+							"attribute": "error-message",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"description": "Live validation-error template; supports {n}, {min}, and {max}."
+						},
+						{
+							"kind": "field",
+							"name": "notice",
+							"deprecated": "Will be removed in a future major release. Use noticeMessage or shared JSON messages.",
+							"attribute": "notice",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"description": "Legacy literal notice override, below notice-message in precedence."
+						},
+						{
+							"kind": "field",
+							"name": "error",
+							"deprecated": "Will be removed in a future major release. Use errorMessage or shared JSON messages.",
+							"attribute": "error",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"description": "Legacy literal error override, below error-message in precedence."
+						},
+						{
+							"kind": "field",
+							"name": "lang",
+							"attribute": "lang",
+							"reflects": true,
+							"type": { "text": "string" },
+							"description": "Authored language; empty when absent. Inheritance is resolved separately across shadow hosts."
+						},
+						{
+							"kind": "field",
+							"name": "enhanced",
+							"readonly": true,
+							"type": { "text": "boolean" },
+							"description": "Whether this instance has a working enhancement; false before setup and after disconnection."
+						},
+						{
+							"kind": "field",
+							"name": "checkedCount",
+							"readonly": true,
+							"type": { "text": "number" },
+							"description": "Current checked managed controls, including disabled controls; zero when not enhanced."
+						},
+						{
+							"kind": "field",
+							"name": "valid",
+							"readonly": true,
+							"type": { "text": "boolean | null" },
+							"description": "Count-constraint validity, not complete native form validity; null when not enhanced."
+						},
+						{
+							"kind": "method",
+							"name": "refresh",
+							"description": "Reread configuration and controls without replacing them. Invalid configuration logs an error and retains the last valid enhancement. Disconnected calls return false.",
+							"return": { "type": { "text": "boolean" } }
+						},
+						{
+							"kind": "field",
+							"name": "customTranslations",
+							"static": true,
+							"deprecated": "Prefer authored instance/shared messages; built-in and registered catalogs remain supported in this release.",
+							"type": {
+								"text": "Record<string, FormRequiredCheckboxesTranslation>"
+							}
+						},
+						{
+							"kind": "method",
+							"name": "registerTranslations",
+							"static": true,
+							"deprecated": "Prefer authored instance/shared messages.",
+							"description": "Validate and merge partial catalogs per language/key. Existing instances reread them on refresh; invalid catalogs throw without replacing previous values.",
+							"parameters": [
+								{
+									"name": "translations",
+									"type": {
+										"text": "Record<string, FormRequiredCheckboxesTranslation>"
+									}
+								}
+							],
+							"return": { "type": { "text": "void" } }
+						}
+					],
 					"attributes": [
 						{
 							"name": "required",
@@ -23,6 +126,7 @@
 						},
 						{
 							"name": "notice",
+							"deprecated": "Will be removed in a future major release. Use notice-message or shared JSON messages.",
 							"description": "The notice message describing the requirement.",
 							"type": {
 								"text": "string"
@@ -30,6 +134,7 @@
 						},
 						{
 							"name": "error",
+							"deprecated": "Will be removed in a future major release. Use error-message or shared JSON messages.",
 							"description": "The error message to show when the requirement is not met.",
 							"type": {
 								"text": "string"
@@ -41,6 +146,27 @@
 							"type": {
 								"text": "string"
 							}
+						},
+						{
+							"name": "notice-message",
+							"fieldName": "noticeMessage",
+							"description": "Authored whole-phrase notice template; instance overrides shared per-rule templates and legacy catalogs.",
+							"type": { "text": "string" }
+						},
+						{
+							"name": "error-message",
+							"fieldName": "errorMessage",
+							"description": "Authored whole-phrase native validation template.",
+							"type": { "text": "string" }
+						}
+					],
+					"events": [
+						{
+							"name": "form-required-checkboxes:change",
+							"type": {
+								"text": "CustomEvent<FormRequiredCheckboxesChangeDetail>"
+							},
+							"description": "Bubbling, composed, noncancelable; frozen detail {checkedCount, minimum, maximum, valid, source: change|reset|refresh}. Emitted after a changed outcome from checkbox change, successful reset, or explicit refresh; not initial setup, setters, equivalent state, or canceled resets."
 						}
 					],
 					"superclass": {
@@ -55,12 +181,54 @@
 					"declaration": {
 						"name": "FormRequiredCheckboxesElement"
 					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "index.js",
+			"exports": [
+				{
+					"kind": "js",
+					"name": "FormRequiredCheckboxesElement",
+					"declaration": {
+						"name": "FormRequiredCheckboxesElement",
+						"module": "form-required-checkboxes.js"
+					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "define.js",
+			"declarations": [
+				{
+					"kind": "function",
+					"name": "defineFormRequiredCheckboxes",
+					"description": "Guarded automatic registration on import; returns false when no browser registry is available.",
+					"parameters": [
+						{
+							"name": "tagName",
+							"default": "'form-required-checkboxes'",
+							"optional": true,
+							"type": { "text": "string" }
+						}
+					],
+					"return": { "type": { "text": "boolean" } }
+				}
+			],
+			"exports": [
+				{
+					"kind": "js",
+					"name": "defineFormRequiredCheckboxes",
+					"declaration": { "name": "defineFormRequiredCheckboxes" }
 				},
 				{
 					"kind": "custom-element-definition",
 					"name": "form-required-checkboxes",
 					"declaration": {
-						"name": "FormRequiredCheckboxesElement"
+						"name": "FormRequiredCheckboxesElement",
+						"module": "form-required-checkboxes.js"
 					}
 				}
 			]

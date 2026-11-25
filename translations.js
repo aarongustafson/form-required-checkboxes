@@ -1,3 +1,4 @@
+/** @deprecated Retained for compatibility; prefer authored instance/shared messages. */
 const defaultTranslations = {
 	en: {
 		exact: 'Choose {n} from the list',

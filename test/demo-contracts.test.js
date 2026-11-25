@@ -46,6 +46,7 @@ it('preserves the published file list, declarations and registration exports', a
 		'form-required-checkboxes.d.ts',
 		'index.js',
 		'define.js',
+		'define.d.ts',
 		'translations.js',
 		'custom-elements.json',
 	]) {
@@ -54,6 +55,7 @@ it('preserves the published file list, declarations and registration exports', a
 	}
 	expect(pkg.exports['.'].types).toBe('./form-required-checkboxes.d.ts');
 	expect(pkg.exports['./define.js'].import).toBe('./define.js');
+	expect(pkg.exports['./define.js'].types).toBe('./define.d.ts');
 	const manifest = JSON.parse(await read('custom-elements.json'));
 	const declaration = manifest.modules
 		.find((module) => module.path === 'form-required-checkboxes.js')
@@ -62,7 +64,14 @@ it('preserves the published file list, declarations and registration exports', a
 		);
 	expect(
 		declaration.attributes.map((attribute) => attribute.name).sort(),
-	).toEqual(['error', 'lang', 'notice', 'required']);
+	).toEqual([
+		'error',
+		'error-message',
+		'lang',
+		'notice',
+		'notice-message',
+		'required',
+	]);
 });
 
 it('gives each authored example its own unique fragment destination', async () => {
@@ -79,6 +88,64 @@ it('gives each authored example its own unique fragment destination', async () =
 			const example = pair.closest('.demo-section');
 			expect(example?.id, `${name}: individual example`).toBeTruthy();
 			expect(example.querySelector('h2, h3'), name).not.toBeNull();
+		}
+	}
+});
+
+it('keeps every code/live pair in a permanent linear tabs host with authored controls', async () => {
+	for (const name of ['index', 'esm', 'unpkg']) {
+		const template = document.createElement('template');
+		template.innerHTML = await read(`demo/${name}.html`);
+		expect(
+			template.content.querySelector('header #demo-tabs-controls button'),
+			name,
+		).not.toBeNull();
+		expect(
+			template.content.querySelector('header #demo-tabs-status'),
+			name,
+		).not.toBeNull();
+		for (const pair of template.content.querySelectorAll(
+			'.code-demo-pair',
+		)) {
+			expect(
+				pair.parentElement.querySelector(':scope > h2, :scope > h3'),
+				`${name}: example heading for the shared loader`,
+			).not.toBeNull();
+			const host = pair.querySelector(
+				':scope > tabbed-interface[data-demo-tabs]',
+			);
+			expect(host, `${name}: permanent host`).not.toBeNull();
+			expect(host.getAttribute('presentation')).toBe('linear');
+			expect(
+				[...host.children].map(
+					(child) =>
+						child.getAttribute('data-demo-tab') || child.className,
+				),
+			).toEqual(['code', 'code-panel', 'live', 'demo']);
+			for (const heading of host.querySelectorAll('[data-demo-tab]')) {
+				expect(heading.hidden).toBe(true);
+			}
+		}
+	}
+});
+
+it('keeps snippets focused while leaving complete live checkbox groups', async () => {
+	for (const name of ['index', 'esm', 'unpkg']) {
+		const template = document.createElement('template');
+		template.innerHTML = await read(`demo/${name}.html`);
+		for (const code of template.content.querySelectorAll('pre code')) {
+			const snippet = document.createElement('template');
+			snippet.innerHTML = code.textContent;
+			expect(snippet.content.querySelector('.form-result')).toBeNull();
+			expect(snippet.content.querySelector('form[id]')).toBeNull();
+			for (const group of snippet.content.querySelectorAll(
+				'form-required-checkboxes',
+			)) {
+				expect(
+					group.querySelectorAll('input[type="checkbox"]').length,
+				).toBeLessThanOrEqual(2);
+				expect(group.querySelector('legend')).not.toBeNull();
+			}
 		}
 	}
 });
