@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { request as httpRequest } from 'node:http';
 import { test as base, expect } from '@playwright/test';
 import { expectNativeFocus, readDemoStyles } from './demo-fixture.js';
+import { parseFragment, elements, attribute } from '../helpers/html.js';
 
 const read = (path) =>
 	readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
@@ -829,19 +830,13 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 					}
 				}
 			}
-			const shown = await example
-				.locator('pre code')
-				.evaluate((element) => {
-					const snippet = document.createElement('template');
-					snippet.innerHTML = element.textContent;
-					return [...snippet.content.querySelectorAll('input')].map(
-						(input) => ({
-							name: input.name,
-							type: input.type,
-							value: input.getAttribute('value'),
-						}),
-					);
-				});
+			const shown = [...elements(parseFragment(code))]
+				.filter((element) => element.tagName === 'input')
+				.map((input) => ({
+					name: attribute(input, 'name') ?? '',
+					type: attribute(input, 'type') ?? 'text',
+					value: attribute(input, 'value'),
+				}));
 			const controls = await live.locator('input').evaluateAll((inputs) =>
 				inputs.map((input) => ({
 					name: input.name,

@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { it, expect } from 'vitest';
+import { parseFragment, elements, attribute } from './helpers/html.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(resolve(root, path), 'utf8');
@@ -134,14 +135,31 @@ it('keeps snippets focused while leaving complete live checkbox groups', async (
 		const template = document.createElement('template');
 		template.innerHTML = await read(`demo/${name}.html`);
 		for (const code of template.content.querySelectorAll('pre code')) {
-			const snippet = document.createElement('template');
-			snippet.innerHTML = code.textContent;
-			expect(snippet.content.querySelector('.form-result')).toBeNull();
-			expect(snippet.content.querySelector('form[id]')).toBeNull();
+			const snippet = [...elements(parseFragment(code.textContent))];
+			expect(
+				snippet.some((element) =>
+					attribute(element, 'class')
+						?.split(/\s+/)
+						.includes('form-result'),
+				),
+			).toBe(false);
+			expect(
+				snippet.some(
+					(element) =>
+						element.tagName === 'form' &&
+						attribute(element, 'id') !== null,
+				),
+			).toBe(false);
 			const language = code.closest('pre').getAttribute('lang');
 			if (language) {
-				expect(snippet.content.querySelector('[lang]')).toBeNull();
-				expect(snippet.content.querySelector('form')).toBeNull();
+				expect(
+					snippet.some(
+						(element) => attribute(element, 'lang') !== null,
+					),
+				).toBe(false);
+				expect(
+					snippet.some((element) => element.tagName === 'form'),
+				).toBe(false);
 				expect(code.closest('pre').getAttribute('data-language')).toBe(
 					'html',
 				);
@@ -152,13 +170,20 @@ it('keeps snippets focused while leaving complete live checkbox groups', async (
 						.getAttribute('lang'),
 				).toBe(language);
 			}
-			for (const group of snippet.content.querySelectorAll(
-				'form-required-checkboxes',
+			for (const group of snippet.filter(
+				(element) => element.tagName === 'form-required-checkboxes',
 			)) {
+				const children = [...elements(group)];
 				expect(
-					group.querySelectorAll('input[type="checkbox"]').length,
+					children.filter(
+						(element) =>
+							element.tagName === 'input' &&
+							attribute(element, 'type') === 'checkbox',
+					).length,
 				).toBeLessThanOrEqual(2);
-				expect(group.querySelector('legend')).not.toBeNull();
+				expect(
+					children.some((element) => element.tagName === 'legend'),
+				).toBe(true);
 			}
 		}
 	}
