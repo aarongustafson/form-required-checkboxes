@@ -35,6 +35,9 @@ jobs:
             - name: Run tests
               run: npm run test:run
 
+            - name: Check public types
+              run: npm run test:types
+
             - name: Generate coverage report
               run: npm run test:coverage
               if: matrix.node-version == '22.x'

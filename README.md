@@ -10,7 +10,8 @@
 validation to a group of native checkboxes. Use a `fieldset` with a `legend`,
 labeled checkboxes that share a `name`, and a `required` count or range.
 The checkboxes work without JavaScript, but group-count validation needs the
-component. Always validate selections on the server too.
+component. Messages can be authored per group or shared across a page. Always
+validate selections on the server too.
 
 ## Demos
 
@@ -105,8 +106,8 @@ each one must be checked.
 When the component connects, it reads its configuration and collects its
 checkboxes. It adds a `small` notice after the legend and includes both the
 legend and notice in the fieldset’s accessible name through `aria-labelledby`.
-Use distinct group names on a page: the component derives notice and, when
-needed, legend IDs from the first checkbox’s name.
+Generated notice and legend IDs are unique. Existing authored naming references
+are preserved.
 
 The component counts selections on `submit` and `formdata`. If the count is
 outside the limits, it prevents the event’s default action and sets a custom
@@ -115,21 +116,27 @@ show that error and focus the checkbox. Other invalid fields can prevent
 submission before the group’s handler runs; the component doesn’t promise a
 validation order for an entire form.
 
-Changing any checkbox clears the group’s custom validity. Native reset restores
-checkbox values, but **does not clear an existing custom error**. After an
-invalid attempt, change a checkbox before resubmitting, or have your application
-explicitly clear validity with the native `setCustomValidity('')` API.
+Changing any checkbox clears the group’s custom validity. A successful native
+reset also clears errors owned by this component after the browser restores
+checkbox values. Canceling reset preserves selections and errors. Reset does
+not move focus or announce a separate message.
 
 ### Author responsibilities and lifecycle
 
-- Supply at least one checkbox, a `fieldset`, a `legend`, labels, and a valid
-  count or ascending range. A missing `required` value throws during setup;
-  malformed limits aren’t validated as a separate configuration error.
-- Keep each group’s checkboxes under the component and give them the same
-  `name`. Keep the group inside its form for submission validation.
-- Configure attributes, properties, and translations before connection.
-  Reflected property changes update attributes, but the component doesn’t
-  observe later changes or refresh its collected checkbox list.
+- Supply at least one named checkbox, a `fieldset`, a `legend`, labels, and a
+  nonnegative safe-integer count or ascending range. Missing or malformed
+  configuration is logged. Initial failure leaves native controls usable;
+  failed updates retain the last valid enhancement. Correct it and call
+  `refresh()` to recover from initial failure.
+- Keep each group’s checkboxes under the component, with the same `name` and
+  native form owner. Native `form` attributes are respected.
+- Attributes and matching properties update an enhanced instance immediately,
+  preserving checkbox nodes, selections, focus, and its existing notice.
+  Call `refresh()` after changing checkbox structure, inherited language,
+  shared JSON, or registered translations; these aren’t globally observed.
+- If your script resets the form or changes selections while the checkboxes
+  or a containing fieldset are disabled, call the component’s `refresh()` after
+  re-enabling them and before checking validity or submitting.
 - Keep useful selection instructions visible without JavaScript. Native
   checkbox behavior remains available if registration fails; count validation
   does not.
@@ -137,60 +144,147 @@ explicitly clear validity with the native `setCustomValidity('')` API.
   security boundary, and preventing `formdata` doesn’t cancel construction of
   a `FormData` object.
 
-Disconnecting removes the component’s form and checkbox event listeners.
-It doesn’t remove its generated notice, restore `aria-labelledby`, or clear
-custom validity. Initialization uses a queued animation frame that isn’t
-canceled on disconnect; reconnecting can add another notice. Don’t rely on
-disconnect/reconnect as a configuration refresh or cleanup mechanism.
+Disconnecting cancels queued initialization and reset work, removes listeners
+and generated notices/IDs, restores authored naming references when still
+component-owned, and clears component-owned validity when its message is
+readable. For disabled checkboxes, cleanup waits until they’re re-enabled and
+the component is refreshed or reconnected. It preserves native
+controls and checked values. Reconnecting enhances the existing controls once,
+without duplicating notices or listeners.
 
 ## Attributes and properties
 
-These properties reflect to attributes. Unset `required`, `notice`, and `error`
-properties return `null`; the component’s `lang` getter also returns `null`
-when the attribute is absent. Setting any of them to `null` or `undefined`
-removes its attribute. Properties assigned before definition are reapplied
-when the element connects.
+String properties reflect their authored attributes, not resolved messages.
+Unset configuration strings return `null`; `lang` returns the native-compatible
+empty string when absent. Nullish assignments remove configuration attributes.
+Properties assigned before definition are replayed through their setters.
 
-| Attribute/property | Values and behavior                                                                                                            | Default                                                    |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `required`         | A count such as `"3"` means exactly 3; `"2-4"` means 2 through 4; `"0-3"` allows 0 through 3. This is a string, not a Boolean. | Required; no default                                       |
-| `notice`           | Plain text explaining the selection limits. The component inserts it in a `small` element after the legend.                    | Generated from the limits and language                     |
-| `error`            | Plain text for the first checkbox’s native validation message when the count is invalid.                                       | Generated from the limits and language                     |
-| `lang`             | Language code such as `"en"`, `"es"`, or `"fr"`.                                                                               | Nearest ancestor language, document language, then English |
+| Attribute/property                 | Values and behavior                                                                                                              | Default                                                    |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `required`                         | A count such as `"3"` means exactly 3; `"2-4"` means 2 through 4; `"0-3"` allows 0 through 3. This is a string, not a Boolean.   | Required; no default                                       |
+| `notice-message` / `noticeMessage` | Complete notice template using `{n}`, `{min}`, and `{max}`. Updates in place.                                                    | [Message precedence](#author-complete-phrases)             |
+| `error-message` / `errorMessage`   | Complete native validation-error template using the same tokens. Updates an existing component-owned error without moving focus. | [Message precedence](#author-complete-phrases)             |
+| `notice`                           | **Deprecated.** Literal notice override; use `notice-message` / `noticeMessage` or shared JSON messages instead.                 | Generated from the limits and language                     |
+| `error`                            | **Deprecated.** Literal validation-error override; use `error-message` / `errorMessage` or shared JSON messages instead.         | Generated from the limits and language                     |
+| `lang`                             | Language code such as `"en"`, `"es"`, or `"fr"`.                                                                                 | Nearest ancestor language, document language, then English |
 
-Empty `notice` and `error` attributes also use generated messages.
+Empty legacy `notice` and `error` attributes use fallback messages. New
+`*-message` templates must be nonempty and contain only supported tokens.
+Invalid updates log an error and retain the working configuration.
 
-## Static methods and events
+## State and refresh
 
-`FormRequiredCheckboxesElement.registerTranslations(translations)` registers
-message sets by language code or replaces existing sets. Call it before
-connecting instances that should use those messages.
+| Member               | Contract                                                                                                                                                                               |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enhanced`           | Read-only Boolean; false before setup and after disconnection.                                                                                                                         |
+| `checkedCount`       | Read-only current checked count among managed checkboxes, including disabled ones; zero when not enhanced.                                                                             |
+| `valid`              | Read-only count-constraint validity, or `null` when not enhanced. This does not replace native field/form validity.                                                                    |
+| `refresh(): boolean` | Reread controls, language, and messages in place. True on success; false when disconnected or invalid. Errors are logged, and a working enhancement is retained after invalid updates. |
 
-The component dispatches no custom events and exposes no instance validation
-command. Use native form and checkbox APIs; the component listens for
-`submit`, `formdata`, and checkbox `change` events.
+Use the native controls for values and form submission. Programmatic
+`.checked` assignments are visible to state getters immediately, but don’t
+manufacture events. Call `refresh()` to synchronize dependent configuration
+and explicitly notify integrations of a changed outcome.
+
+## Change event
+
+`form-required-checkboxes:change` bubbles, crosses shadow boundaries, and isn’t
+cancelable. It fires after a changed outcome from a checkbox `change`,
+successful reset, or explicit `refresh()`, not initial setup, setters, canceled
+resets, or equivalent outcomes.
+
+Its frozen `detail` contains `checkedCount`, `minimum`, `maximum`, `valid`,
+and `source` (`"change"`, `"reset"`, or `"refresh"`). It exposes no selected
+values. It describes the count rule, not whole-form validity or completion of
+assistive-technology announcements.
+
+```javascript
+const group = document.querySelector('form-required-checkboxes');
+group.addEventListener('form-required-checkboxes:change', ({ detail }) => {
+	console.log(detail.checkedCount, detail.valid, detail.source);
+});
+```
 
 ## Localization
 
-Use `notice` and `error` to match an application’s vocabulary for one group,
-or register a shared message set. Explicit, nonempty instance messages take
-precedence over generated translations. See the
-[custom-message demo](./demo/index.html#custom-messages).
+### Author complete phrases
 
-Language selection uses the element’s `lang`, then its nearest ancestor’s
-`lang`, then the document’s language, then `en`. Regional codes such as `es-MX`
-use the base language (`es`); an unknown language falls back to English.
+Use `notice-message` and `error-message` for one group:
 
-Built-in languages are `en`, `zh`, `hi`, `es`, `fr`, `ar`, `bn`, `pt`, `ru`,
-`ja`, `de`, `pa`, `jv`, `ko`, `vi`, and `it`. The
-[translation source](./translations.js) contains their messages.
+```html
+<form-required-checkboxes
+	required="2-4"
+	notice-message="De {min} à {max}, choisissez vos compétences."
+	error-message="Choisissez entre {min} et {max} compétences."
+>
+	<!-- Authored, labeled native checkboxes -->
+</form-required-checkboxes>
+```
 
-### Register a complete message set
+Tokens are replaced once as literal text, never HTML. `{min}` and `{max}` are
+the bounds; `{n}` is the maximum, including for an exact count. Numbers use
+the nearest authored language, including across shadow hosts. An explicit empty
+`lang` stops inheritance and uses English. Malformed formatting locales are
+logged and use English number formatting.
 
-Registration replaces a language’s object rather than merging its individual
-keys. Supply all five keys, even when you only want to change one message.
-Later registration of the same language replaces the earlier set. Missing
-templates can cause setup to fail.
+The `notice` and `error` attributes and properties are **deprecated and will be
+removed in a future major release**. They remain supported as literal overrides
+in this release and don’t interpolate tokens. Move per-group strings to
+`notice-message` / `noticeMessage` and `error-message` / `errorMessage`, or use
+[shared JSON messages](#share-messages-across-groups) for page-wide defaults.
+Remove the legacy overrides when migrating to shared messages: they take
+precedence over page defaults.
+
+For each message, precedence is:
+
+1. New instance `*-message` template.
+2. Nonempty legacy instance override.
+3. Shared page message for that rule.
+4. Registered language key.
+5. Built-in language key, then English.
+
+### Share messages across groups
+
+Use one inline JSON script per document. A message can be a string for every
+rule or a partial object with `exact`, `max`, and `range` templates:
+
+```html
+<script type="application/json" data-form-required-checkboxes-config>
+	{
+		"notice-message": {
+			"exact": "Choose {n} skills.",
+			"range": "Choose between {min} and {max} skills."
+		},
+		"error-message": "Please choose {min} through {max} skills."
+	}
+</script>
+```
+
+Resolve missing rules independently through the fallback chain. The script
+is language-neutral authored text, not an automatic translation catalog.
+Translate it alongside the page; instance overrides can localize particular
+groups. Duplicate/external scripts, unknown keys/rules/tokens, empty strings,
+and invalid JSON are reported without replacing a working configuration.
+Edits apply on `refresh()` or the next successful configuration update. No
+global mutation observer or named scopes are added.
+
+### Deprecated built-in translations
+
+**Built-in language catalogs and `registerTranslations()` are deprecated, not
+removed in this release.** Existing localized pages continue to work without
+runtime deprecation warnings. New integrations should author instance/shared
+messages so the application owns its wording and translations. Catalog removal
+is reserved for a future major release.
+
+Existing built-in languages remain `en`, `zh`, `hi`, `es`, `fr`, `ar`, `bn`,
+`pt`, `ru`, `ja`, `de`, `pa`, `jv`, `ko`, `vi`, and `it`. Regional codes fall
+back through parent languages to English, merging each message key. The
+[translation source](./translations.js) is still shipped.
+
+`FormRequiredCheckboxesElement.registerTranslations()` now validates and merges
+partial language sets per key instead of erasing unrelated templates. Invalid
+registration throws without replacing prior sets. Refresh connected instances
+after registration.
 
 | Key           | Used for                        | Placeholders     |
 | ------------- | ------------------------------- | ---------------- |
@@ -204,19 +298,10 @@ templates can cause setup to fail.
 import { FormRequiredCheckboxesElement } from '@aarongustafson/form-required-checkboxes';
 
 FormRequiredCheckboxesElement.registerTranslations({
-	en: {
-		exact: 'Pick exactly {n} skills',
-		max: 'Pick up to {n} skills',
-		range: 'Pick between {min} and {max} skills',
-		error_exact: 'Please pick exactly {n} skills',
-		error_range: 'Please pick between {min} and {max} skills',
-	},
+	en: { exact: 'Pick exactly {n} skills' },
 });
 
-customElements.define(
-	'form-required-checkboxes',
-	FormRequiredCheckboxesElement,
-);
+document.querySelector('form-required-checkboxes')?.refresh();
 ```
 
 ## Styling and accessibility
@@ -254,6 +339,7 @@ npm run lint
 # Run unit tests once (npm test starts watch mode)
 npm run test:run
 npm run test:coverage
+npm run test:types
 
 # Install browser engines once, then run the browser tests
 npx playwright install chromium firefox webkit

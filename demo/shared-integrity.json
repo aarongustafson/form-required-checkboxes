@@ -1,16 +1,16 @@
 {
-	".github/instructions/demo.instructions.md": "b736bada16029639f3c2af5d6bc765f08793dcf9482d8399f9ad3c5f3fe36e34",
-	"demo/README.md": "f635f5c1607c41d5fa06d8d64f0336fc6c09a3357c613ea7faf27a45d10f8cdd",
+	".github/instructions/demo.instructions.md": "f5fe237b74884699e958d4d2825ab91656511406e6990cb4a6a63add10532ef9",
+	"demo/README.md": "22d0cd94feaa79d0daec8aa79c1b11ac771dcdd71d47d1850d82c22dd35bfeec",
 	"demo/shared-files.json": "91bc9fe00d714b68a16f8e401ddebb39753dd026d98016461a0d9170a3f3e3bb",
-	"demo/demo-shell.css": "badc32a7192ef452490ee83a0eab6c90cec5a46c878383847b14359a98775032",
-	"demo/code-examples.js": "856bedc4aacf0919511ac71cedaae0cdfe39fc405ffc0a4aeeb97db5918b069f",
+	"demo/demo-shell.css": "392252b87ca1e9921dc3f4e9d6e8779c6247c856d991ad9af48d9b5df468cbcf",
+	"demo/code-examples.js": "d53031d534fa551c99cb0ec3040bb445bc62fa35f9ed736f63e4427514740220",
 	"test/demo-layout.test.js": "5a7afd9b8a12ab1676c23287fa1d129136c94cae5141e89f7bb61e26912863ad",
 	"test/demo-enhancement.test.js": "6d158dcf2ccfb0f301765e52fa09adee71c1c9a14810190de622876ad83357a2",
 	"test/demo-mark.test.js": "0cee4ecb1c7092bc8f8a82d7151824a56d9c9bef11af3e905974c90ec9bc8802",
 	"test/demo-ownership.test.js": "81008c477fc5bba2ba945ed4770d46176cf9d12d058061628638f0b6be39ae9e",
 	"test/demo-shared.test.js": "b5f43907a8fabb2a95aa78be14390ce2cfbc7eee0eb490ac049145882fa80bd0",
 	"scripts/check-demo-shared.js": "34848b90753ccd3307267a18495f948b7999c4698204a52e67ae5c02b1f760da",
-	"test/browser/demo-fixture.js": "dc4e8c49b040bdfe047a383f7cc2c8e281b6b671a86e4428b254fbc09b22583a",
-	"test/browser/code-examples.spec.js": "4f079157afd34a92006aefc93d22fe3deb07ae7675a0446540a194d23bc70630",
-	"test/browser/demo-colors.spec.js": "eb491c382a77210ce369a6e18ec0d94b153cb676337dfda58bcde8142ef99f53"
+	"test/browser/demo-fixture.js": "bb5d3d8732111895535009e871dcb49625260e12eb2d101628abc7fa242cfc8c",
+	"test/browser/code-examples.spec.js": "e040103ed69df89361ed0300460362d20b3c769c6a8cdf8c7c2789836de6c7f0",
+	"test/browser/demo-colors.spec.js": "da11e7f85d797ae4d15461c4567fdfd82ce2bc09457e87cef7e4dcd89e18b6d2"
 }

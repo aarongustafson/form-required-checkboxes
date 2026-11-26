@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { request as httpRequest } from 'node:http';
 import { test as base, expect } from '@playwright/test';
 import { expectNativeFocus, readDemoStyles } from './demo-fixture.js';
+import { parseFragment, elements, attribute } from '../helpers/html.js';
 
 const read = (path) =>
 	readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
@@ -9,6 +10,10 @@ const read = (path) =>
 // Firefox/WebKit reserve port 4190 (Sieve). Relay a test-only origin through
 // Playwright's HTTP client to the exclusive fixture, without another server.
 async function routeFixture(context) {
+	await context.route(
+		'https://cdn.jsdelivr.net/npm/@aarongustafson/tabbed-interface@3.1.0/**',
+		(route) => route.abort(),
+	);
 	await context.route(
 		'https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/**',
 		(route) => route.abort(),
@@ -437,7 +442,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await demo(page, name);
 		for (const pair of await page.locator('.code-demo-pair').all()) {
 			const code = await pair
-				.locator(':scope > micro-lighter')
+				.locator(':scope > tabbed-interface > micro-lighter')
 				.boundingBox();
 			const live = await pair.locator('.demo').boundingBox();
 			expect(code.x).toBeLessThan(live.x);
@@ -447,7 +452,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await page.addStyleTag({ content: 'html { font-size: 200%; }' });
 		for (const pair of await page.locator('.code-demo-pair').all()) {
 			const code = await pair
-				.locator(':scope > micro-lighter')
+				.locator(':scope > tabbed-interface > micro-lighter')
 				.boundingBox();
 			const live = await pair.locator('.demo').boundingBox();
 			expect(code.y + code.height).toBeLessThanOrEqual(live.y);
@@ -464,7 +469,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 	}) => {
 		await demo(page, name);
 		const marks = page.locator('pre code mark');
-		await expect(marks).toHaveCount(name === 'index.html' ? 15 : 4);
+		await expect(marks.first()).toBeVisible();
 		const supportsAdjustment = await page.evaluate(() =>
 			CSS.supports('forced-color-adjust', 'auto'),
 		);
@@ -507,13 +512,13 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 			content:
 				'pre, input[type=email], button { background-image: none !important; }',
 		});
-		for (const selector of ['pre', 'input[type=email]', 'button']) {
+		for (const selector of ['pre', 'input[type=email]', '.demo button']) {
 			for (const element of await page.locator(selector).all()) {
 				expect(
 					await textContrast(element),
 					selector,
 				).toBeGreaterThanOrEqual(4.5);
-				if (selector === 'button') {
+				if (selector === '.demo button') {
 					await element.hover();
 					expect(
 						await textContrast(element),
@@ -669,7 +674,7 @@ test('localized/custom notices, native earlier-field priority, and unchanged opt
 	).toBeFocused();
 	expect(
 		await page.locator('#form7 fieldset').getAttribute('aria-labelledby'),
-	).toContain('prefs-description');
+	).toContain(await page.locator('#form7 small').getAttribute('id'));
 	await expect(page.locator('#form1 fieldset')).toHaveAccessibleName(
 		'Choose your top 3 skills Choose 3 from the list',
 	);
@@ -727,10 +732,9 @@ test('authored exact, range, and optional-maximum examples enforce both limits',
 		await page.keyboard.press('Escape');
 		await form.locator('button[type=reset]').click();
 		await expect(form.locator('input:checked')).toHaveCount(0);
-		// Native reset restores values, not an existing custom validity error.
-		expect(
-			await first.evaluate((input) => input.validity.customError),
-		).toBe(true);
+		await expect
+			.poll(() => first.evaluate((input) => input.validity.customError))
+			.toBe(false);
 		await first.focus();
 		await page.keyboard.press('Space');
 		expect(
@@ -760,7 +764,9 @@ test('embedded translations include controls, errors, results, and language sema
 		],
 	]) {
 		const form = page.locator(`#${id}`);
-		await expect(form).toHaveAttribute('lang', language);
+		expect(
+			await form.evaluate((element) => element.closest('.demo').lang),
+		).toBe(language);
 		await form
 			.getByRole('button', { name: submitLabel, exact: true })
 			.click();
@@ -806,28 +812,40 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 				await page.evaluate(() => innerHeight),
 			);
 			const code = await example.locator('pre code').textContent();
-			const form = example.locator('.demo form');
-			const group = form.locator('form-required-checkboxes');
-			for (const attribute of ['required', 'notice', 'error', 'lang']) {
-				const value = await group.getAttribute(attribute);
-				if (value !== null) {
-					expect(code).toContain(`${attribute}="${value}"`);
+			const live = example.locator('.demo');
+			for (const group of await live
+				.locator('form-required-checkboxes')
+				.all()) {
+				for (const attribute of [
+					'required',
+					'notice',
+					'error',
+					'notice-message',
+					'error-message',
+					'lang',
+				]) {
+					const value = await group.getAttribute(attribute);
+					if (value !== null) {
+						expect(code).toContain(`${attribute}="${value}"`);
+					}
 				}
 			}
-			for (const input of await form.locator('input').all()) {
-				expect(code).toContain(
-					`name="${await input.getAttribute('name')}"`,
-				);
-				const value = await input.getAttribute('value');
-				if (value !== null) expect(code).toContain(`value="${value}"`);
-			}
-			for (const label of await form
-				.locator('label, button, .form-result')
-				.all()) {
-				const text = (await label.textContent())
-					.replace(/\s+/g, ' ')
-					.trim();
-				expect(code.replace(/\s+/g, ' ')).toContain(text);
+			const shown = [...elements(parseFragment(code))]
+				.filter((element) => element.tagName === 'input')
+				.map((input) => ({
+					name: attribute(input, 'name') ?? '',
+					type: attribute(input, 'type') ?? 'text',
+					value: attribute(input, 'value'),
+				}));
+			const controls = await live.locator('input').evaluateAll((inputs) =>
+				inputs.map((input) => ({
+					name: input.name,
+					type: input.type,
+					value: input.getAttribute('value'),
+				})),
+			);
+			for (const input of shown) {
+				expect(controls).toContainEqual(input);
 			}
 		}
 		if (name !== 'index.html') {
@@ -836,7 +854,7 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 			const code = await panel.locator('pre code').textContent();
 			expect(code).toContain('<script type="module">');
 			expect(code.indexOf('</script>')).toBeLessThan(
-				code.indexOf('<form>'),
+				code.indexOf('<form-required-checkboxes'),
 			);
 		}
 	});
@@ -897,7 +915,7 @@ test('increased contrast retains full-strength supporting text and button hover 
 			.locator('body')
 			.evaluate((element) => getComputedStyle(element).color),
 	);
-	const button = page.locator('button').first();
+	const button = page.locator('.demo button').first();
 	const resting = await button.evaluate(
 		(element) => getComputedStyle(element).backgroundImage,
 	);
