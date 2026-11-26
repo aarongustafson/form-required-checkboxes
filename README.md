@@ -134,6 +134,9 @@ not move focus or announce a separate message.
   preserving checkbox nodes, selections, focus, and its existing notice.
   Call `refresh()` after changing checkbox structure, inherited language,
   shared JSON, or registered translations; these aren’t globally observed.
+- If your script resets the form or changes selections while the checkboxes
+  or a containing fieldset are disabled, call the component’s `refresh()` after
+  re-enabling them and before checking validity or submitting.
 - Keep useful selection instructions visible without JavaScript. Native
   checkbox behavior remains available if registration fails; count validation
   does not.
@@ -143,7 +146,9 @@ not move focus or announce a separate message.
 
 Disconnecting cancels queued initialization and reset work, removes listeners
 and generated notices/IDs, restores authored naming references when still
-component-owned, and clears component-owned validity. It preserves native
+component-owned, and clears component-owned validity when its message is
+readable. For disabled checkboxes, cleanup waits until they’re re-enabled and
+the component is refreshed or reconnected. It preserves native
 controls and checked values. Reconnecting enhances the existing controls once,
 without duplicating notices or listeners.
 

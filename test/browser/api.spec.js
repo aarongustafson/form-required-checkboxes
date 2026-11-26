@@ -117,6 +117,137 @@ test('a later canceled reset does not cancel earlier successful cleanup or steal
 	await expect(checkbox).toBeFocused();
 });
 
+test('valid FormData after reset preserves same-task cleanup and its notification', async ({
+	page,
+}) => {
+	await open(page);
+	const checkbox = page.getByRole('checkbox', { name: 'JavaScript' });
+	await checkbox.uncheck();
+	await page.getByRole('button', { name: 'Submit' }).click();
+	expect(await checkbox.evaluate((input) => input.validity.customError)).toBe(
+		true,
+	);
+	await page.locator('form').evaluate((form) => {
+		window.resetOutcomes = [];
+		form.addEventListener('form-required-checkboxes:change', (event) => {
+			window.resetOutcomes.push(event.detail);
+		});
+		form.reset();
+		new FormData(form);
+	});
+	await expect(checkbox).toHaveJSProperty('validationMessage', '');
+	expect(
+		await page.locator('form').evaluate((form) => form.checkValidity()),
+	).toBe(true);
+	expect(await page.evaluate(() => window.resetOutcomes)).toEqual([
+		{
+			checkedCount: 1,
+			minimum: 1,
+			maximum: 2,
+			valid: true,
+			source: 'reset',
+		},
+	]);
+});
+
+test('new invalid FormData after reset supersedes the queued cleanup', async ({
+	page,
+}) => {
+	await open(page);
+	await page.locator('form').evaluate((form) => {
+		form.reset();
+		form.querySelector('input').checked = false;
+		new FormData(form);
+	});
+	await page.evaluate(
+		() => new Promise((resolve) => setTimeout(resolve, 20)),
+	);
+	await expect(
+		page.getByRole('checkbox', { name: 'JavaScript' }),
+	).toHaveJSProperty(
+		'validationMessage',
+		'You must choose between 1 and 2 options',
+	);
+});
+
+for (const cleanup of ['reset', 'disconnect', 'refresh']) {
+	for (const disabledBy of ['input', 'fieldset']) {
+		for (const applicationError of [false, true]) {
+			test(`refresh after ${cleanup} and re-enabling a disabled ${disabledBy} ${applicationError ? 'preserves application errors' : 'clears owned errors'}`, async ({
+				page,
+			}) => {
+				await open(page);
+				const checkbox = page.getByRole('checkbox', {
+					name: 'JavaScript',
+				});
+				await checkbox.uncheck();
+				await page.getByRole('button', { name: 'Submit' }).click();
+				await expect(checkbox).toHaveJSProperty(
+					'validationMessage',
+					'You must choose between 1 and 2 options',
+				);
+				await page.locator('form').evaluate(
+					(form, options) => {
+						const group = form.querySelector(
+							'form-required-checkboxes',
+						);
+						const input = group.querySelector('input');
+						const disabled =
+							options.disabledBy === 'input'
+								? input
+								: group.querySelector('fieldset');
+						disabled.setAttribute('disabled', 'authored');
+						if (options.applicationError)
+							input.setCustomValidity('Application error');
+						form.querySelector('button').focus();
+						window.cleanupInput = input;
+						window.cleanupGroup = group;
+						window.cleanupDisabled = disabled;
+						window.cleanupFocus = document.activeElement;
+						if (options.cleanup === 'reset') form.reset();
+						else if (options.cleanup === 'disconnect') {
+							input.checked = true;
+							group.remove();
+						} else {
+							input.checked = true;
+							group.refresh();
+						}
+					},
+					{ cleanup, disabledBy, applicationError },
+				);
+				await page.evaluate(
+					() => new Promise((resolve) => setTimeout(resolve, 20)),
+				);
+				expect(
+					await page.evaluate(() => ({
+						disabled:
+							window.cleanupDisabled.getAttribute('disabled'),
+						focus: document.activeElement === window.cleanupFocus,
+					})),
+				).toEqual({ disabled: 'authored', focus: true });
+				const outcome = await page.evaluate(() => {
+					window.cleanupDisabled.removeAttribute('disabled');
+					if (!window.cleanupGroup.isConnected)
+						document
+							.querySelector('form')
+							.append(window.cleanupGroup);
+					const refreshed = window.cleanupGroup.refresh();
+					return {
+						refreshed,
+						message: window.cleanupInput.validationMessage,
+						valid: window.cleanupInput.checkValidity(),
+					};
+				});
+				expect(outcome).toEqual({
+					refreshed: true,
+					message: applicationError ? 'Application error' : '',
+					valid: !applicationError,
+				});
+			});
+		}
+	}
+}
+
 test('external native form ownership survives refresh and reset', async ({
 	page,
 }) => {

@@ -528,11 +528,11 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 
 	__handleValidation(e) {
 		if (e.target !== this.__$target) return;
-		this.#generation++;
 		const total_checked = [...this.__$checkboxes].filter(
 			(input) => input.checked,
 		).length;
 		if (total_checked < this.__min || total_checked > this.__max) {
+			this.#generation++;
 			e.preventDefault();
 			this.__setError();
 			if (this.__shouldShowFieldError(this.__$checkboxes[0])) {
@@ -585,6 +585,13 @@ export class FormRequiredCheckboxesElement extends HTMLElement {
 	}
 
 	__clearOwnedError() {
+		// Barred controls hide their message; defer ownership checks until refresh.
+		if (
+			this.#errorInput &&
+			!this.#errorInput.willValidate &&
+			this.#errorInput.validity.customError
+		)
+			return;
 		if (
 			this.#ownedError !== null &&
 			this.#errorInput?.validationMessage === this.#ownedError
